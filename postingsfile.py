@@ -30,12 +30,18 @@ class PostingsFile(object):
     DWORD_SIZE = 4
     DWORD_FMT = '>I'
 
-    def __init__(self, filename, filemode):
+    def __init__(self, filename, write=False):
+        """
+        A PostingsFile object is either in read-only mode, xor in write-only
+        mode.
+        """
         assert type(filename) == str
         assert type(filemode) == str
 
         self.__filename = filename
-        self.__file_mode = filemode
+        self.__file_mode = 'rb'
+        if write:
+            self.__file_mode = 'wb'
         self.__fd = None
 
     def __del__(self):
