@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ElementTree
 
+
 class Patent(object):
     """Class used to parse an entire Patent with all its fields."""
 
