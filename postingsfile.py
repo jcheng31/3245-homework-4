@@ -135,7 +135,6 @@ class PostingsFile(object):
     @requires_open
     def __read_prefix(self):
         length = self.__read_DWord()
-        assert length > 0
         return length
 
 # Private methods for reading/writing compound data types
