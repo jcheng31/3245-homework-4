@@ -39,3 +39,6 @@ env/
 
 # Corpus files
 patsnap-corpus
+
+# Sample queries
+queries
