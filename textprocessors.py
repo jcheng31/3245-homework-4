@@ -20,7 +20,7 @@ def hw3_tokenizer(text):
         return [__stemmer.stem(w) for w in words]
     except TypeError:
         print 'TypeError while processing text: {}\nNo tokens were returned' \
-               .format(text)
+              .format(text)
         return []
 
 

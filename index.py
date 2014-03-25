@@ -59,8 +59,8 @@ class IndexBuilder(object):
     def serialize(self, pretty=False):
         indices = self.m_file['indices']
         for key in indices:
-            # We convert the document-set for each index to a sorted list so that
-            # it can be natively json serialised.
+            # We convert the document-set for each index to a sorted list so
+            # that it can be natively json serialised.
             indices[key]['docs'] = sorted(indices[key]['docs'])
 
             # Compute document frequency and inverse document frequency.

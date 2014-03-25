@@ -1,5 +1,6 @@
 import utils
 
+
 def search(dictionary_file, postings_file, query_file, output_file):
     print dictionary_file
     print postings_file
