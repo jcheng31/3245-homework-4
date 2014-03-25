@@ -1,5 +1,6 @@
 #!/env/bin/python
 import os
+import math
 import json
 import argparse
 import textprocessors
@@ -56,11 +57,24 @@ class IndexBuilder(object):
                 dictionary[term] = [_tuple]
 
     def serialize(self, pretty=False):
-        # We convert the document-set for each index to a sorted list so that
-        # it can be natively json serialised.
         indices = self.m_file['indices']
         for key in indices:
+            # We convert the document-set for each index to a sorted list so that
+            # it can be natively json serialised.
             indices[key]['docs'] = sorted(indices[key]['docs'])
+
+            # Compute document frequency and inverse document frequency.
+            index = indices[key]
+            count = len(index['docs'])
+            for dict_key in index['dictionary']:
+                entries = index['dictionary'][dict_key]
+                doc_freq = len(entries)
+                idf = math.log(float(count) / doc_freq, 10)
+                index['dictionary'][dict_key] = {
+                    'df': doc_freq,
+                    'idf': idf,
+                    'entries': entries
+                }
 
         with open(self.dict_path, 'w') as f:
             if pretty:
