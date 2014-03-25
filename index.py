@@ -1,46 +1,72 @@
 #!/env/bin/python
 import os
+import json
 import argparse
 import textprocessors
 from patent import Patent
 
-try:
-    import ujson as json_impl
-except ImportError:
-    import json as json_impl
-    print 'ujson not found, using native json'
-
 
 class IndexBuilder(object):
+    guid = 0
+
     def __init__(self, dict_path, postings_path):
         self.dict_path = dict_path
         self.postings_path = postings_path
+        self.m_file = {
+            'doc_guid': dict(),
+            'guid_doc': dict(),
+            'indices': dict()
+        }
         self.m_indices = dict()
 
     def add_tokens_for_key(self, tokens, doc_id, key):
-        if key not in self.m_indices:
-            self.m_indices[key] = {
+        # Normalise the doc_id by assigning it an integer guid for easier
+        # comparison. If the document has already been seen, we use its old
+        # guid.
+        all_docs = self.m_file['doc_guid']
+        if doc_id not in all_docs:
+            guid = IndexBuilder.next_guid()
+            all_docs[doc_id] = guid
+            self.m_file['guid_doc'][guid] = doc_id
+        guid = all_docs[doc_id]
+
+        # Create an index for the specified field (key) if it does not already
+        # exist in the dictionary/postings file.
+        indices = self.m_file['indices']
+        if key not in indices:
+            indices[key] = {
                 'docs': set(),
                 'dictionary': dict()
             }
+        docs = indices[key]['docs']
+        dictionary = indices[key]['dictionary']
 
-        docs = self.m_indices[key]['docs']
-        dictionary = self.m_indices[key]['dictionary']
+        # Within the index for the specified field (key), we add the document's
+        # guid to the set of documents that occur in that index.
+        docs.add(guid)
 
-        docs.add(doc_id)
+        # Finally, we iterate through each token seen in that document and
+        # build a list of (guid, term_frequency)-tuples.
         tf = self.__compute_term_frequencies(tokens)
         for term in tf:
-            _tuple = (doc_id, tf[term])
+            _tuple = (guid, tf[term])
             if term in dictionary:
                 dictionary[term].append(_tuple)
             else:
                 dictionary[term] = [_tuple]
 
-    def serialize(self):
-        for key in self.m_indices:
-            self.m_indices[key]['docs'] = sorted(self.m_indices[key]['docs'])
+    def serialize(self, pretty=False):
+        # We convert the document-set for each index to a sorted list so that
+        # it can be natively json serialised.
+        indices = self.m_file['indices']
+        for key in indices:
+            indices[key]['docs'] = sorted(indices[key]['docs'])
+
         with open(self.dict_path, 'w') as f:
-            json_impl.dump(self.m_indices, f)
+            if pretty:
+                json.dump(self.m_file, f, indent=2)
+            else:
+                json.dump(self.m_file, f)
 
     def __compute_term_frequencies(self, tokens):
         """
@@ -53,6 +79,12 @@ class IndexBuilder(object):
             else:
                 tf[w] = 1
         return tf
+
+    @staticmethod
+    def next_guid():
+        val = IndexBuilder.guid
+        IndexBuilder.guid += 1
+        return val
 
 
 class DirectoryProcessor(object):
