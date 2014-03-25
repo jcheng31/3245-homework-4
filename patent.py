@@ -25,17 +25,10 @@ def root_node_to_dictionary(root):
         key = element.attrib['name']
         value = element.text.strip() if element.text else None
 
-        if value:
-            # Handle lists, which are delimited in the XML by |
-            if is_list(value):
-                value = [tok.strip() for tok in value.split('|')]
-        else:
+        if not value:
             # Normalise null or empty values to empty string.
             value = ''
 
         dict_representation[key] = value
 
     return dict_representation
-
-def is_list(candidate):
-    return ' | ' in candidate

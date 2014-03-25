@@ -11,12 +11,18 @@ __stemmer = PorterStemmer()
 # Stemmer.
 def hw3_tokenizer(text):
     global __stemmer
-    sentences = sent_tokenize(text)
-    words = []
-    for sent in sentences:
-        sent = sent.lower()
-        words += word_tokenize(sent.strip())
-    return [__stemmer.stem(w) for w in words]
+    try:
+        sentences = sent_tokenize(text)
+        words = []
+        for sent in sentences:
+            sent = sent.lower()
+            words += word_tokenize(sent.strip())
+        return [__stemmer.stem(w) for w in words]
+    except TypeError:
+        print 'TypeError while processing text: {}\nNo tokens were returned' \
+               .format(text)
+        return []
+
 
 # To add new fields to the index, or to modify the tokenisation behavior of
 # a field, write a new tokenising function, and add it to extract_fields

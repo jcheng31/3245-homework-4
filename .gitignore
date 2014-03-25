@@ -42,3 +42,7 @@ patsnap-corpus
 
 # Sample queries
 queries
+
+# Sample output
+out.json
+result.txt
