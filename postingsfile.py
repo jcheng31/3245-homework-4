@@ -29,6 +29,8 @@ class PostingsFile(object):
     - Length-prefixed strings
     - Arrays of (doc_id, term_freq)-tuples, where type(doc_id) == str and
       type(term_freq) == int
+
+    WARNING: We do not check for length overflows at the moment (be nice).
     """
     DWORD_SIZE = 4
     DWORD_FMT = '>I'
