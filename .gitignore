@@ -43,6 +43,7 @@ patsnap-corpus
 # Sample queries
 queries
 
-# Sample output
-out.json
-result.txt
+# Default output
+dictionary.txt
+postings.txt
+results.txt

@@ -1,6 +1,6 @@
 #!/env/bin/python
 import os
-import json
+import ujson
 import argparse
 import textprocessors
 from patent import Patent
@@ -32,11 +32,10 @@ class IndexBuilder(object):
                 dictionary[term] = [_tuple]
 
     def serialize(self):
-        # Debug implementation.
         for key in self.m_indices:
-            self.m_indices[key]['docs'] = list(self.m_indices[key]['docs'])
-        with open('out.json', 'w') as f:
-            json.dump(self.m_indices, f, indent=2)
+            self.m_indices[key]['docs'] = sorted(self.m_indices[key]['docs'])
+        with open(self.dict_path, 'w') as f:
+            ujson.dump(self.m_indices, f)
 
     def __compute_term_frequencies(self, tokens):
         """
