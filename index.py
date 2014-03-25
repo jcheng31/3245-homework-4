@@ -3,7 +3,7 @@ import os
 import ujson
 import argparse
 import textprocessors
-from patent import Patent
+import utils
 
 
 class IndexBuilder(object):
@@ -69,7 +69,7 @@ class DirectoryProcessor(object):
                 continue
 
             full_path = self.__doc_dir + filename
-            patent_info = Patent.from_file(full_path)
+            patent_info = utils.xml_file_to_dict(full_path)
             self.__process_patent(doc_id, patent_info)
 
         self.__indexer.serialize()
