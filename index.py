@@ -1,9 +1,14 @@
 #!/env/bin/python
 import os
-import ujson
 import argparse
 import textprocessors
 from patent import Patent
+
+try:
+    import ujson as json_impl
+except ImportError:
+    import json as json_impl
+    print 'ujson not found, using native json'
 
 
 class IndexBuilder(object):
@@ -35,7 +40,7 @@ class IndexBuilder(object):
         for key in self.m_indices:
             self.m_indices[key]['docs'] = sorted(self.m_indices[key]['docs'])
         with open(self.dict_path, 'w') as f:
-            ujson.dump(self.m_indices, f)
+            json_impl.dump(self.m_indices, f)
 
     def __compute_term_frequencies(self, tokens):
         """
