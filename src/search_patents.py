@@ -10,4 +10,4 @@ def search(dictionary_file, postings_file, query_file, output_file):
     # Read and build index files
 
     # Read and parse query_file
-    print utils.xml_file_to_dict(query_file)
+    print utils.parse_query_file(query_file)
