@@ -3,6 +3,7 @@ import os
 import math
 import json
 import argparse
+import indexfields
 import textprocessors
 import utils
 
@@ -14,9 +15,9 @@ class IndexBuilder(object):
         self.dict_path = dict_path
         self.postings_path = postings_path
         self.m_file = {
-            'doc_guid': dict(),
-            'guid_doc': dict(),
-            'indices': dict()
+            indexfields.DOC_GUID_MAP: dict(),
+            indexfields.GUID_DOC_MAP: dict(),
+            indexfields.INDICES: dict()
         }
         self.m_indices = dict()
 
@@ -24,23 +25,23 @@ class IndexBuilder(object):
         # Normalise the doc_id by assigning it an integer guid for easier
         # comparison. If the document has already been seen, we use its old
         # guid.
-        all_docs = self.m_file['doc_guid']
+        all_docs = self.m_file[indexfields.DOC_GUID_MAP]
         if doc_id not in all_docs:
             guid = IndexBuilder.next_guid()
             all_docs[doc_id] = guid
-            self.m_file['guid_doc'][guid] = doc_id
+            self.m_file[indexfields.GUID_DOC_MAP][guid] = doc_id
         guid = all_docs[doc_id]
 
         # Create an index for the specified field (key) if it does not already
         # exist in the dictionary/postings file.
-        indices = self.m_file['indices']
+        indices = self.m_file[indexfields.INDICES]
         if key not in indices:
             indices[key] = {
-                'docs': set(),
-                'dictionary': dict()
+                indexfields.INDEX_DOCS: set(),
+                indexfields.INDEX_DICT: dict()
             }
-        docs = indices[key]['docs']
-        dictionary = indices[key]['dictionary']
+        docs = indices[key][indexfields.INDEX_DOCS]
+        dictionary = indices[key][indexfields.INDEX_DICT]
 
         # Within the index for the specified field (key), we add the document's
         # guid to the set of documents that occur in that index.
@@ -57,30 +58,28 @@ class IndexBuilder(object):
                 dictionary[term] = [_tuple]
 
     def serialize(self, pretty=False):
-        indices = self.m_file['indices']
+        indices = self.m_file[indexfields.INDICES]
         for key in indices:
             # We convert the document-set for each index to a sorted list so
             # that it can be natively json serialised.
-            indices[key]['docs'] = sorted(indices[key]['docs'])
+            indices[key][indexfields.INDEX_DOCS] = \
+                sorted(indices[key][indexfields.INDEX_DOCS])
 
             # Compute document frequency and inverse document frequency.
             index = indices[key]
-            count = len(index['docs'])
-            for dict_key in index['dictionary']:
-                entries = index['dictionary'][dict_key]
+            count = len(index[indexfields.INDEX_DOCS])
+            for dict_key in index[indexfields.INDEX_DICT]:
+                entries = index[indexfields.INDEX_DICT][dict_key]
                 doc_freq = len(entries)
                 idf = math.log(float(count) / doc_freq, 10)
-                index['dictionary'][dict_key] = {
-                    'df': doc_freq,
-                    'idf': idf,
-                    'entries': entries
+                index[indexfields.INDEX_DICT][dict_key] = {
+                    indexfields.TOKEN_DOC_FREQ: doc_freq,
+                    indexfields.TOKEN_IDF: idf,
+                    indexfields.TOKEN_ENTRIES: entries
                 }
 
         with open(self.dict_path, 'w') as f:
-            if pretty:
-                json.dump(self.m_file, f, indent=2)
-            else:
-                json.dump(self.m_file, f)
+            json.dump(self.m_file, f)
 
     def __compute_term_frequencies(self, tokens):
         """

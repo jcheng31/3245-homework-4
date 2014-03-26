@@ -1,10 +1,10 @@
 index:
-	python index.py -i patsnap-corpus -d dictionary.txt -p postings.txt
+	python src/index.py -i patsnap-corpus -d run/dictionary.txt
 
 search:
-	python search.py -d dictionary.txt -p postings.txt \
-		-q queries/q1.xml -o output.txt
+	python src/search.py -d run/dictionary.txt -p run/postings.txt \
+		-q queries/q1.xml -o run/output.txt
 
 search2:
-	python search.py -d dictionary.txt -p postings.txt \
-		-q queries/q2.xml -o output.txt
+	python src/search.py -d run/dictionary.txt -p run/postings.txt \
+		-q queries/q2.xml -o run/output.txt
