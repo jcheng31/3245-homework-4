@@ -7,10 +7,23 @@ class CompoundIndex(object):
         self.__path = dict_path
         with open(self.__path, 'r') as f:
             self.__m_file = json.load(f)
+
+        self.__gd_map = self.__m_file[indexfields.GUID_DOC_MAP]
+        self.__dg_map = self.__m_file[indexfields.DOC_GUID_MAP]
         self.__indices = self.__m_file[indexfields.INDICES]
+
+        self.__remap()
 
     def __str__(self):
         return 'CompoundIndex (Loaded Dictionary: {})'.format(self.____path)
+
+    def __remap(self):
+        # Keys in JSON have to be strings, and our GUIDs are implicitly cast
+        # to strings on serialisation. We re-parse them into integer types to
+        # recover ease of comparison.
+        self.__m_file[indexfields.GUID_DOC_MAP] = {
+            int(key): self.__gd_map[key] for key in self.__gd_map
+        }
 
     def indices(self):
         """
@@ -22,15 +35,13 @@ class CompoundIndex(object):
         """
         Returns the document name on the disk for a given guid.
         """
-        gd_map = self.__m_file[indexfields.GUID_DOC_MAP]
-        return gd_map.get(guid, None)
+        return self.__gd_map.get(guid, None)
 
     def guid_for_document_name(self, name):
         """
         Returns the guid for a given document name.
         """
-        dg_map = self.__m_file[indexfields.DOC_GUID_MAP]
-        return dg_map.get(name, None)
+        return self.__dg_map.get(name, None)
 
     def documents_in_index(self, index_name):
         """
