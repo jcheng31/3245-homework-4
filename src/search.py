@@ -1,16 +1,33 @@
 #!/env/bin/python
 import os
 import argparse
-import search_patents
+import utils
+import compoundindex
+
+
+class Search(object):
+    def __init__(self, dictionary_file, postings_file, query_file, output_file):
+        self.dictionary_file = dictionary_file
+        self.postings_file = postings_file
+        self.query_file = query_file
+        self.output_file = output_file
+
+        self.compound_index = compoundindex.CompoundIndex(dictionary_file)
+        self.query = utils.parse_query_file(query_file)
+
+    def execute(self):
+        # TODO(michael)
+        pass
 
 
 def main(args):
-    args.dictionary = os.path.abspath(args.dictionary)
-    args.postings = os.path.abspath(args.postings)
-    args.query = os.path.abspath(args.query)
-    args.output = os.path.abspath(args.output)
-    search_patents.search(args.dictionary, args.postings, args.query,
-                          args.output)
+    dictionary_file = os.path.abspath(args.dictionary)
+    postings_file = os.path.abspath(args.postings)
+    query_file = os.path.abspath(args.query)
+    output_file = os.path.abspath(args.output)
+
+    s = Search(dictionary_file, postings_file, query_file, output_file)
+    s.execute()
 
 
 if __name__ == '__main__':
