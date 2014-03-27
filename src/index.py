@@ -143,13 +143,12 @@ def main(args):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='boolean retrieval \
-                                     assignment.')
-    parser.add_argument('-i', '--index', type=str, help='directory of \
-                        of documents.', required=True)
-    parser.add_argument('-d', '--dictionary', type=str, help='dictionary \
-                        file.', default='dictionary.txt')
-    parser.add_argument('-p', '--postings', type=str, help='postings file.',
-                        default='postings.txt')
+    parser = argparse.ArgumentParser(description='Patsnap assignment - Index')
+    parser.add_argument('-i', '--index', required=True,
+                        help='directory of documents.')
+    parser.add_argument('-d', '--dictionary', required=True,
+                        help='dictionary file.')
+    parser.add_argument('-p', '--postings', required=True,
+                        help='postings file.')
     args = parser.parse_args()
     main(args)

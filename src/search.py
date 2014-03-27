@@ -14,14 +14,14 @@ def main(args):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Patsnap assignment.')
-    parser.add_argument('-d', '--dictionary', type=str,
-                        help='dictionary file.', default='dictionary.txt')
-    parser.add_argument('-p', '--postings', type=str, help='postings file.',
-                        default='postings.txt')
-    parser.add_argument('-q', '--query', type=str, help='query file.',
-                        required=True)
-    parser.add_argument('-o', '--output', type=str, help='output file.',
-                        default='results.txt')
+    parser = argparse.ArgumentParser(description='Patsnap assignment - Search')
+    parser.add_argument('-d', '--dictionary', required=True,
+                        help='dictionary file.')
+    parser.add_argument('-p', '--postings', required=True,
+                        help='postings file.')
+    parser.add_argument('-q', '--query', required=True,
+                        help='query file.')
+    parser.add_argument('-o', '--output', required=True,
+                        help='output file.')
     args = parser.parse_args()
     main(args)
