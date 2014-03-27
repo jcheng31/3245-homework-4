@@ -9,7 +9,7 @@ __stemmer = PorterStemmer()
 # This is the tokeniser from homework 3.
 # Uses sent_tokenize(), case-folds, word_tokenize(), then stems using Porter
 # Stemmer.
-def hw3_tokenizer(text):
+def generic_tokenizer(text):
     global __stemmer
     try:
         sentences = sent_tokenize(text)
@@ -29,8 +29,8 @@ def hw3_tokenizer(text):
 # below.
 # All tokenizers must return a list of strings that represent tokens to be
 # added to the dictionary file.
-__title_tokenizer = hw3_tokenizer
-__abstract_tokenizer = hw3_tokenizer
+__title_tokenizer = generic_tokenizer
+__abstract_tokenizer = generic_tokenizer
 extract_fields = {
     patentfields.TITLE: __title_tokenizer,
     patentfields.ABSTRACT: __abstract_tokenizer
