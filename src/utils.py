@@ -31,20 +31,9 @@ def root_node_to_dictionary(root):
 
 
 def parse_query_file(file_path):
-    """Returns a dictionary representation of the query file.
-
-    NOTE(michael): The query file seems to be non-standard xml. Which causes
-    element tree to raise an exception.
-    """
-
+    """Returns a dictionary representation of the query file."""
     with open(file_path, 'r') as f:
-        # Make the xml well form.
-        xml = ''
-        for line in f:
-            xml += line
-            if line.startswith('<?xml'):
-                xml += '<data>'
-        xml += '</data>'
+        xml = f.read()
 
     root = ElementTree.fromstring(xml)
     retval = {}
