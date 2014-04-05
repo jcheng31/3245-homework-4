@@ -1,5 +1,7 @@
 import xml.etree.ElementTree as ElementTree
 
+from itertools import izip
+
 
 def xml_file_to_dict(file_path):
     """
@@ -41,3 +43,11 @@ def parse_query_file(file_path):
         retval[child.tag] = child.text.strip()
 
     return retval
+
+
+def dot_product(v1, v2):
+    """Calculates the dot product of two vectors.
+
+    Expects vectors as an iterable. Returns a number.
+    """
+    return sum(x * y for x, y in izip(v1, v2))

@@ -1,9 +1,11 @@
 import math
+import utils
 
-from itertools import izip
 from types import GeneratorType
 
 LOG_BASE = 10
+
+dot_product = utils.dot_product
 
 
 def unit_vector(vector):
@@ -20,14 +22,6 @@ def unit_vector(vector):
 
     length = math.sqrt(sum(x ** 2 for x in vector))
     return (float(x)/length for x in vector)
-
-
-def dot_product(v1, v2):
-    """Calculates the dot product of two vectors.
-
-    Expects vectors as an iterable. Returns a number.
-    """
-    return sum(x * y for x, y in izip(v1, v2))
 
 
 def logtf(term_frequency):
