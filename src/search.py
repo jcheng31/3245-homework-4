@@ -1,6 +1,7 @@
 #!/env/bin/python
 import os
 import argparse
+import collections
 import utils
 import compoundindex
 import textprocessors
@@ -9,6 +10,31 @@ from layers import booleanlayer
 
 
 class Search(object):
+    """Main search object.
+
+    The main method is `execute`, which basically performs the search query by
+    passing it through the various LAYERS.
+
+    Each layer represents the idea of a feature. For instance, a basic
+    implementation could have two layers/features:
+
+        - boolean
+        - number of citations
+
+    After passing the query through the two layers, each document will have a
+    tuple representing its score.
+
+        eg.
+            (a1, a2)
+            (b1, b2)
+            (c1, c2)
+            ...
+    We then do a dot product of these scores against a tuple of various
+    predefined thresholds to arrive at a final absolute score for each document.
+
+    Notice that the thresholds of particular features can therefore be tweaked
+    independent of other to tune the search system based on feedback.
+    """
     LAYERS = [
         booleanlayer.BooleanLayer(),
     ]
@@ -41,12 +67,25 @@ class Search(object):
 
     def execute(self):
         # Start with a clean slate.
-        candidate_doc_ids = []
+        shared_obj = SharedSearchObject()
 
         for layer in self.LAYERS:
-            candidate_doc_ids = layer(self, candidate_doc_ids)
+            layer(self, shared_obj)
 
-        return candidate_doc_ids
+        return shared_obj.doc_ids_to_scores
+
+
+class SharedSearchObject(object):
+    """Simple case class, used as a shared object between search layers.
+
+    Used to pass, reuse values (if required by features that span multiple
+    layers.)
+    """
+    def __init__(self):
+        self.doc_ids_to_scores = collections.defaultdict(dict)
+
+    def set_layer_score(self, doc_id, layer, score):
+        self.doc_ids_to_scores[doc_id][layer] = score
 
 
 def main(args):
