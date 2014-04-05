@@ -1,5 +1,6 @@
 index:
-	python src/index.py -i patsnap-corpus -d run/dictionary.txt
+	python src/index.py -i patsnap-corpus -d run/dictionary.txt \
+		-p run/postings.txt
 
 search:
 	python src/search.py -d run/dictionary.txt -p run/postings.txt \
