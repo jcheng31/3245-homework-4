@@ -19,20 +19,35 @@ class IndexBuilder(object):
         self.m_file = {
             indexfields.DOC_GUID_MAP: dict(),
             indexfields.GUID_DOC_MAP: dict(),
-            indexfields.INDICES: dict()
+            indexfields.INDICES: dict(),
+            indexfields.FIELDS: dict(),
         }
         self.m_indices = dict()
 
-    def add_tokens_for_key(self, tokens, doc_id, key):
-        # Normalise the doc_id by assigning it an integer guid for easier
-        # comparison. If the document has already been seen, we use its old
-        # guid.
+    def get_guid(self, doc_id):
+        """Return the guid for given doc_id.
+
+        Normalise the doc_id by assigning it an integer guid for easier
+        comparison. If the document has already been seen, we use its old guid.
+        """
         all_docs = self.m_file[indexfields.DOC_GUID_MAP]
         if doc_id not in all_docs:
             guid = IndexBuilder.next_guid()
             all_docs[doc_id] = guid
             self.m_file[indexfields.GUID_DOC_MAP][guid] = doc_id
-        guid = all_docs[doc_id]
+        return all_docs[doc_id]
+
+    def add_value_for_field(self, val, doc_id, field):
+        """Adds a simple field-value pair for a doc_id."""
+        guid = self.get_guid(doc_id)
+
+        if guid not in self.m_file[indexfields.FIELDS]:
+            self.m_file[indexfields.FIELDS][guid] = {}
+
+        self.m_file[indexfields.FIELDS][guid][field] = val
+
+    def add_tokens_for_zone(self, tokens, doc_id, key):
+        guid = self.get_guid(doc_id)
 
         # Create an index for the specified field (key) if it does not already
         # exist in the dictionary/postings file.
@@ -108,6 +123,12 @@ class DirectoryProcessor(object):
         patentfields.ABSTRACT,
     ]
 
+    FIELDS = [
+        patentfields.CITED_BY_COUNT,
+        patentfields.CITED_BY_WITHIN_THREE_YEARS,
+        patentfields.CITED_BY_WITHIN_FIVE_YEARS,
+    ]
+
     def __init__(self, doc_dir, indexer, free_text_tokenizer=None):
         # Normalize with trailing slash for consistency.
         if doc_dir[-1] != '/':
@@ -137,7 +158,13 @@ class DirectoryProcessor(object):
             text = info.get(zone)
             if text:
                 tokens = self.free_text_tokenizer(text)
-                self.__indexer.add_tokens_for_key(tokens, doc_id, zone)
+                self.__indexer.add_tokens_for_zone(tokens, doc_id, zone)
+
+        # Process fields.
+        for field in self.FIELDS:
+            val = info.get(field)
+            if val:
+                self.__indexer.add_value_for_field(val, doc_id, field)
 
 
 def main(args):

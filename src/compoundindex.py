@@ -11,6 +11,7 @@ class CompoundIndex(object):
         self.__gd_map = self.__m_file[indexfields.GUID_DOC_MAP]
         self.__dg_map = self.__m_file[indexfields.DOC_GUID_MAP]
         self.__indices = self.__m_file[indexfields.INDICES]
+        self.__fields = self.__m_file[indexfields.FIELDS]
 
         self.__remap()
 
@@ -18,6 +19,7 @@ class CompoundIndex(object):
         return 'CompoundIndex (Loaded Dictionary: {})'.format(self.____path)
 
     def __remap(self):
+        """Remaps keys to ints (JSON keys have to be strings.)"""
         # Keys in JSON have to be strings, and our GUIDs are implicitly cast
         # to strings on serialisation. We re-parse them into integer types to
         # recover ease of comparison.
@@ -53,6 +55,16 @@ class CompoundIndex(object):
             return []
         else:
             return self.__indices[index_name][indexfields.INDEX_DOCS]
+
+    def value_for_field(self, field):
+        """
+        Returns a list of (guid, fieid_value) for the given field.
+        """
+        retval = []
+        for guid, fields in self.__fields.iteritems():
+            if field in fields:
+                retval.append(guid, fields.get(field))
+        return retval
 
     def terms_in_index(self, index_name):
         """

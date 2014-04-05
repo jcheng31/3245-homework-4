@@ -1,5 +1,6 @@
 DOC_GUID_MAP = 'doc_guid'
 GUID_DOC_MAP = 'guid_doc'
+# TODO(michael): We should rename indices to zones.
 INDICES = 'indices'
 INDEX_DOCS = 'docs'
 INDEX_DICT = 'dictionary'
