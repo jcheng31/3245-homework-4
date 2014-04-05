@@ -41,22 +41,23 @@ class Search(object):
 
     # Declaration of features and their weights.
     FEATURE_WEIGHT_TUPLE = [
-        (vsm.VectorSpaceModelTitle(),               1),
-        (vsm.VectorSpaceModelAbstract(),            1),
+        (vsm.VectorSpaceModelTitle(),               4),
+        (vsm.VectorSpaceModelAbstract(),            2),
         (vsm.VectorSpaceModelTitleAndAbstract(),    1),
     ]
 
-    def __init__(self, dictionary_file, postings_file, query_file, output_file):
+    def __init__(self, dictionary_file, postings_file, query_file):
         self.dictionary_file = dictionary_file
         self.postings_file = postings_file
         self.query_file = query_file
-        self.output_file = output_file
         self.__compound_index = compoundindex.CompoundIndex(dictionary_file)
         self.__query = utils.parse_query_file(query_file)
         self.__tokens = {
             patentfields.TITLE: tokenizer(self.query_title),
             patentfields.ABSTRACT: tokenizer(self.query_description),
         }
+        self.features, self.features_weights = zip(*self.FEATURE_WEIGHT_TUPLE)
+        self.features_vector_key = [f.NAME for f in self.features]
 
     def get_tokens_for(self, index):
         return self.__tokens.get(index)
@@ -64,10 +65,26 @@ class Search(object):
     def execute(self):
         shared_obj = SharedSearchObject()
 
-        for feature, _ in self.FEATURE_WEIGHT_TUPLE:
+        for feature in self.features:
             feature(self, shared_obj)
 
-        return shared_obj.doc_ids_to_scores
+        results = self.calculate_score(shared_obj.doc_ids_to_scores)
+        results.sort(reverse=True) # Highest score first.
+        return [doc_id for score, doc_id in results]
+
+    def calculate_score(self, doc_ids_to_scores):
+        """Returns a list of (score, doc_id).
+
+        Calculates the dot product between each document's score for each
+        feature and the respective feature weights."""
+        results = []
+        for doc_id, score in doc_ids_to_scores.iteritems():
+            doc_score_vector = [score.get(key, 0) for key in
+                self.features_vector_key]
+            doc_score = utils.dot_product(doc_score_vector,
+                self.features_weights)
+            results.append((doc_score, doc_id))
+        return results
 
     query_title = property(lambda self: self.__query['title'])
     query_description = property(lambda self: self.__query['description'])
@@ -94,8 +111,13 @@ def main(args):
     query_file = os.path.abspath(args.query)
     output_file = os.path.abspath(args.output)
 
-    s = Search(dictionary_file, postings_file, query_file, output_file)
-    print s.execute()
+    s = Search(dictionary_file, postings_file, query_file)
+    results = s.execute()
+
+    # Write results to file.
+    with open(output_file, 'w+') as output:
+        results = [str(x) for x in results]
+        output.write('%s\n' % ' '.join(results))
 
 
 if __name__ == '__main__':
