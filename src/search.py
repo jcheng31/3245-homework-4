@@ -7,7 +7,7 @@ import patentfields
 import utils
 
 from features import vsm
-from textprocessors import generic_tokenizer as tokenizer
+from parser import free_text as tokenizer
 
 
 class Search(object):

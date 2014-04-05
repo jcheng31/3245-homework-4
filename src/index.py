@@ -1,11 +1,13 @@
 #!/env/bin/python
-import os
-import math
-import json
 import argparse
 import indexfields
-import textprocessors
+import json
+import math
+import os
+import patentfields
 import utils
+
+from parser import free_text
 
 
 class IndexBuilder(object):
@@ -101,14 +103,19 @@ class IndexBuilder(object):
 
 
 class DirectoryProcessor(object):
-    def __init__(self, doc_dir, indexer, extract_fields):
+    ZONES = [
+        patentfields.TITLE,
+        patentfields.ABSTRACT,
+    ]
+
+    def __init__(self, doc_dir, indexer, free_text_tokenizer=None):
         # Normalize with trailing slash for consistency.
         if doc_dir[-1] != '/':
             doc_dir += '/'
 
         self.__doc_dir = doc_dir
         self.__indexer = indexer
-        self.__extract_fields = extract_fields
+        self.free_text_tokenizer = free_text_tokenizer or free_text
 
     def run(self):
         for filename in os.listdir(self.__doc_dir):
@@ -125,11 +132,12 @@ class DirectoryProcessor(object):
         self.__indexer.serialize()
 
     def __process_patent(self, doc_id, info):
-        for field in self.__extract_fields:
-            text = info.get(field, None)
+        # Process free text.
+        for zone in self.ZONES:
+            text = info.get(zone)
             if text:
-                tokens = self.__extract_fields[field](text)
-                self.__indexer.add_tokens_for_key(tokens, doc_id, field)
+                tokens = self.free_text_tokenizer(text)
+                self.__indexer.add_tokens_for_key(tokens, doc_id, zone)
 
 
 def main(args):
@@ -138,7 +146,7 @@ def main(args):
     args.postings = os.path.abspath(args.postings)
 
     ib = IndexBuilder(args.dictionary, args.postings)
-    dp = DirectoryProcessor(args.index, ib, textprocessors.extract_fields)
+    dp = DirectoryProcessor(args.index, ib)
     dp.run()
 
 
