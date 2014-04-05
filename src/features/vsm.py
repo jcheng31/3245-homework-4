@@ -81,7 +81,7 @@ class VectorSpaceModelMultipleFields(VectorSpaceModelBase):
                 documents_with_term.add(doc_id)
         document_freq = len(documents_with_term)
         documents_in_index = self.number_of_docs_in_indices(compound_index)
-        return math.log(float(documents_in_index) / document_freq, 10)
+        return idf(documents_in_index, document_freq)
 
     @cache.naive_class_method_cache
     def number_of_docs_in_indices(self, compound_index):

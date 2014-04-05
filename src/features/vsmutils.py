@@ -21,10 +21,24 @@ def unit_vector(vector):
         raise TypeError("Use a list/tuple instead.")
 
     length = math.sqrt(sum(x ** 2 for x in vector))
+    if length == 0:
+        return (0 for x in vector)
     return (float(x)/length for x in vector)
 
 
 def logtf(term_frequency):
+    """Calculates the logtf given the tf of a term."""
     if term_frequency == 0:
         return 0
     return 1 + math.log(term_frequency, LOG_BASE)
+
+
+def idf(n, df):
+    """Calculates idf given n and df.
+
+    n: number of documents
+    df: document frequency of term
+    """
+    if df == 0 or n == 0:
+        return 0
+    return math.log(float(n) / df, LOG_BASE)

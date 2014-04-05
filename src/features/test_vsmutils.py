@@ -1,8 +1,9 @@
 import math
 
-from vsmutils import *
 from nose.tools import eq_ as assert_eq
 from nose.tools import raises
+from vsmutils import *
+
 
 def test_unit_vector_single():
     vector = (1,)
@@ -13,6 +14,13 @@ def test_unit_vector_single():
 
     vector = (10,)
     assert_eq((1,), tuple(unit_vector(vector)))
+
+
+def test_unit_vector_zero():
+    vector = (0, 0)
+    # Should not raise exception
+    assert_eq((0, 0), tuple(unit_vector(vector)))
+
 
 def test_unit_vector_multiple():
     vector = (1, 2)
@@ -26,6 +34,7 @@ def test_unit_vector_multiple():
     assert_eq(
         (float(3)/length, float(5)/length),
         tuple(unit_vector(vector)))
+
 
 @raises(TypeError)
 def test_unit_vector_generator():
@@ -55,6 +64,7 @@ def test_dot_product():
         3 * 2 + 6 * 5,
         dot_product(v1, v2))
 
+
 def test_dot_product_generators():
     vals = [0,1,2,3,4]
     v1 = (x for x in vals)
@@ -62,3 +72,9 @@ def test_dot_product_generators():
     assert_eq(
         1 + 4 + 9 + 16,
         dot_product(v1, v2))
+
+
+def test_idf_zero():
+    assert_eq(0, idf(1, 0))
+    assert_eq(0, idf(0, 1))
+    assert_eq(0, idf(0, 0))
