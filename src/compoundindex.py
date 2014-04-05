@@ -27,6 +27,10 @@ class CompoundIndex(object):
             int(key): self.__gd_map[key] for key in self.__gd_map
         }
 
+        self.__fields = {
+            int(key): self.__fields[key] for key in self.__fields
+        }
+
     def indices(self):
         """
         Returns a list of indexed fields in this compound index.
@@ -63,7 +67,7 @@ class CompoundIndex(object):
         retval = []
         for guid, fields in self.__fields.iteritems():
             if field in fields:
-                retval.append(guid, fields.get(field))
+                retval.append((guid, fields.get(field)))
         return retval
 
     def terms_in_index(self, index_name):

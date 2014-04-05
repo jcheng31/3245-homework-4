@@ -6,7 +6,7 @@ import os
 import patentfields
 import utils
 
-from features import vsm
+from features import vsm, fields
 from parser import free_text as tokenizer
 
 
@@ -40,10 +40,13 @@ class Search(object):
     """
 
     # Declaration of features and their weights.
-    FEATURE_WEIGHT_TUPLE = [
+    FEATURES = [
         (vsm.VectorSpaceModelTitle(),               4),
         (vsm.VectorSpaceModelAbstract(),            2),
         (vsm.VectorSpaceModelTitleAndAbstract(),    1),
+
+        # fields only serve to boost scores of documents that are relevant.
+        (fields.CitationCount(),                    0.5),
     ]
 
     def __init__(self, dictionary_file, postings_file, query_file):
@@ -56,7 +59,7 @@ class Search(object):
             patentfields.TITLE: tokenizer(self.query_title),
             patentfields.ABSTRACT: tokenizer(self.query_description),
         }
-        self.features, self.features_weights = zip(*self.FEATURE_WEIGHT_TUPLE)
+        self.features, self.features_weights = zip(*self.FEATURES)
         self.features_vector_key = [f.NAME for f in self.features]
 
     def get_tokens_for(self, index):
@@ -137,9 +140,14 @@ class SharedSearchObject(object):
     logic.)
     """
     def __init__(self):
-        self.doc_ids_to_scores = collections.defaultdict(dict)
+        self.doc_ids_to_scores = {}
+
+    def has_score(self, doc_id):
+        return self.doc_ids_to_scores.get(doc_id)
 
     def set_feature_score(self, feature, doc_id, score):
+        if not self.doc_ids_to_scores.get(doc_id):
+            self.doc_ids_to_scores[doc_id] = {}
         self.doc_ids_to_scores[doc_id][feature] = score
 
 
