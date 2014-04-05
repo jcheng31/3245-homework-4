@@ -1,12 +1,13 @@
 #!/env/bin/python
-import os
 import argparse
 import collections
-import utils
 import compoundindex
-import textprocessors
+import os
+import patentfields
+import utils
 
-from features import boolean
+from features import vsm
+from textprocessors import generic_tokenizer as tokenizer
 
 
 class Search(object):
@@ -40,7 +41,9 @@ class Search(object):
 
     # Declaration of features and their weights.
     FEATURE_WEIGHT_TUPLE = [
-        (boolean.Boolean(), 1),
+        (vsm.VectorSpaceModelTitle(),               1),
+        (vsm.VectorSpaceModelAbstract(),            1),
+        (vsm.VectorSpaceModelTitleAndAbstract(),    1),
     ]
 
     def __init__(self, dictionary_file, postings_file, query_file, output_file):
@@ -50,24 +53,13 @@ class Search(object):
         self.output_file = output_file
         self.__compound_index = compoundindex.CompoundIndex(dictionary_file)
         self.__query = utils.parse_query_file(query_file)
+        self.__tokens = {
+            patentfields.TITLE: tokenizer(self.query_title),
+            patentfields.ABSTRACT: tokenizer(self.query_description),
+        }
 
-    query_title = property(lambda self: self.__query['title'])
-    query_description = property(lambda self: self.__query['description'])
-    compound_index = property(lambda self: self.__compound_index)
-
-    @property
-    def query_title_tokens(self):
-        return textprocessors.generic_tokenizer(self.query_title)
-
-    @property
-    def query_description_tokens(self):
-        return textprocessors.generic_tokenizer(self.query_description)
-
-    @property
-    def query_tokens(self):
-        tokens = self.query_title_tokens
-        tokens.extend(self.query_description_tokens)
-        return tokens
+    def get_tokens_for(self, index):
+        return self.__tokens.get(index)
 
     def execute(self):
         shared_obj = SharedSearchObject()
@@ -76,6 +68,11 @@ class Search(object):
             feature(self, shared_obj)
 
         return shared_obj.doc_ids_to_scores
+
+    query_title = property(lambda self: self.__query['title'])
+    query_description = property(lambda self: self.__query['description'])
+    compound_index = property(lambda self: self.__compound_index)
+
 
 
 class SharedSearchObject(object):
@@ -87,8 +84,8 @@ class SharedSearchObject(object):
     def __init__(self):
         self.doc_ids_to_scores = collections.defaultdict(dict)
 
-    def set_layer_score(self, doc_id, layer, score):
-        self.doc_ids_to_scores[doc_id][layer] = score
+    def set_feature_score(self, feature, doc_id, score):
+        self.doc_ids_to_scores[doc_id][feature] = score
 
 
 def main(args):
