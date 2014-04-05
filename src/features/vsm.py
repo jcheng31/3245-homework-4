@@ -1,6 +1,7 @@
 import collections
 import patentfields
 
+from helpers import cache
 from vsmutils import *
 
 
@@ -82,6 +83,7 @@ class VectorSpaceModelMultipleFields(VectorSpaceModelBase):
         documents_in_index = self.number_of_docs_in_indices(compound_index)
         return math.log(float(documents_in_index) / document_freq, 10)
 
+    @cache.naive_class_method_cache
     def number_of_docs_in_indices(self, compound_index):
         documents_in_index = set()
         for idx in self.INDICES:
