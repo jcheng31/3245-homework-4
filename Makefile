@@ -10,7 +10,7 @@ search2:
 		-q queries/q2.xml -o run/output.txt
 
 
-matric_no := a0082877m-a0080860h
+matric_no := a0082877m-a0080860h-a0092104u
 
 submission:
 	rm -rf $(matric_no) $(matric_no).zip
