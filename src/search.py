@@ -6,37 +6,41 @@ import utils
 import compoundindex
 import textprocessors
 
-from layers import booleanlayer
+from features import boolean
 
 
 class Search(object):
     """Main search object.
 
     The main method is `execute`, which basically performs the search query by
-    passing it through the various LAYERS.
+    passing it through the various features (to calculate the score for the
+    feature).
 
-    Each layer represents the idea of a feature. For instance, a basic
-    implementation could have two layers/features:
+    For instance, a basic implementation could have two features:
 
-        - boolean
+        - boolean query
         - number of citations
 
-    After passing the query through the two layers, each document will have a
-    tuple representing its score.
+    After passing the query through the two features, each document will have a
+    tuple representing its score. (If a score is not set, we default the score
+    to 0).
 
         eg.
             (a1, a2)
             (b1, b2)
             (c1, c2)
             ...
+
     We then do a dot product of these scores against a tuple of various
     predefined thresholds to arrive at a final absolute score for each document.
 
     Notice that the thresholds of particular features can therefore be tweaked
     independent of other to tune the search system based on feedback.
     """
-    LAYERS = [
-        booleanlayer.BooleanLayer(),
+
+    # Declaration of features and their weights.
+    FEATURE_WEIGHT_TUPLE = [
+        (boolean.Boolean(), 1),
     ]
 
     def __init__(self, dictionary_file, postings_file, query_file, output_file):
@@ -66,20 +70,19 @@ class Search(object):
         return tokens
 
     def execute(self):
-        # Start with a clean slate.
         shared_obj = SharedSearchObject()
 
-        for layer in self.LAYERS:
-            layer(self, shared_obj)
+        for feature, _ in self.FEATURE_WEIGHT_TUPLE:
+            feature(self, shared_obj)
 
         return shared_obj.doc_ids_to_scores
 
 
 class SharedSearchObject(object):
-    """Simple case class, used as a shared object between search layers.
+    """Simple case class, used as a shared object between search features.
 
-    Used to pass, reuse values (if required by features that span multiple
-    layers.)
+    Used to pass, reuse values (if required by features that share common
+    logic.)
     """
     def __init__(self):
         self.doc_ids_to_scores = collections.defaultdict(dict)

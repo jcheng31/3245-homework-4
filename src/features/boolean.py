@@ -1,11 +1,10 @@
 import patentfields
 
 
-class BooleanLayer(object):
-    """Simple boolean search layer.
+class Boolean(object):
+    """Simple boolean search feature.
 
-    Returns the set of doc_ids that are relevant to the search query using
-    boolean retrieval
+    Assigns a score of 1 if any search term is present in the document.
     """
     def __call__(self, search, shared_obj):
         for token in search.query_tokens:
