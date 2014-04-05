@@ -70,7 +70,8 @@ class Search(object):
 
         results = self.calculate_score(shared_obj.doc_ids_to_scores)
         results.sort(reverse=True) # Highest score first.
-        return [doc_id for score, doc_id in results]
+        return [self.compound_index.document_name_for_guid(str(doc_id))
+            for score, doc_id in results]
 
     def calculate_score(self, doc_ids_to_scores):
         """Returns a list of (score, doc_id).
@@ -116,7 +117,6 @@ def main(args):
 
     # Write results to file.
     with open(output_file, 'w+') as output:
-        results = [str(x) for x in results]
         output.write('%s\n' % ' '.join(results))
 
 
