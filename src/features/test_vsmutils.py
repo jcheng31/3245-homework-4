@@ -1,6 +1,6 @@
 import math
 
-from searchutils import *
+from vsmutils import *
 from nose.tools import eq_ as assert_eq
 from nose.tools import raises
 

@@ -1,7 +1,7 @@
 import collections
 import patentfields
 
-from searchutils import *
+from vsmutils import *
 
 
 class VectorSpaceModelBase(object):
