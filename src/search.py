@@ -33,7 +33,8 @@ class Search(object):
             ...
 
     We then do a dot product of these scores against a tuple of various
-    predefined thresholds to arrive at a final absolute score for each document.
+    predefined thresholds to arrive at a final absolute score for each
+    document.
 
     Notice that the thresholds of particular features can therefore be tweaked
     independent of other to tune the search system based on feedback.
@@ -56,10 +57,13 @@ class Search(object):
     def __init__(self, query_xml, compound_index):
         self.__compound_index = compound_index
         self.__query = utils.parse_query_xml(query_xml)
+
+        # Note(Cam): Query expansion works on theses:
         self.__tokens = {
             patentfields.TITLE: tokenizer(self.query_title),
             patentfields.ABSTRACT: tokenizer(self.query_description),
         }
+
         self.features, self.features_weights = zip(*self.FEATURES)
         self.features_vector_key = [f.NAME for f in self.features]
 
@@ -80,8 +84,8 @@ class Search(object):
     def execute(self, verbose=False):
         """Returns a list of document names that satisfy the query.
 
-        Documents are returned in order of relevance. If the verbose argument is
-        set, returns a list of lists, where each list item is of format:
+        Documents are returned in order of relevance. If the verbose argument
+        is set, returns a list of lists, where each list item is of format:
 
             [<score>, <feature vector scores>, doc_id]
             ...
@@ -92,25 +96,26 @@ class Search(object):
             try:
                 feature(self, shared_obj)
             except Exception, e:
-                # NOTE(michael): This is for the competition framework. (When an
-                # error occurs during search, there is no log/entry at all.
+                # NOTE(michael): This is for the competition framework. (When
+                # an error occurs during search, there is no log/entry at all.
                 import traceback
                 tb = traceback.format_exc()
                 print "# Error in feature: %s\n%s" % (feature.NAME, tb)
 
         results = self.calculate_score(shared_obj.doc_ids_to_scores)
-        results.sort(reverse=True) # Highest score first.
+        results.sort(reverse=True)  # Highest score first.
 
         if verbose:
             retval = []
             for elem in results:
                 elem = list(elem)
-                elem[-1] = self.compound_index.document_name_for_guid(str(elem[-1]))
+                elem[-1] = self.compound_index.\
+                    document_name_for_guid(str(elem[-1]))
                 retval.append(elem)
             return retval
 
         return [self.compound_index.document_name_for_guid(str(elem[-1]))
-            for elem in results]
+                for elem in results]
 
     def calculate_score(self, doc_ids_to_scores):
         """Returns a list of (score, doc_id).
@@ -120,16 +125,15 @@ class Search(object):
         results = []
         for doc_id, score in doc_ids_to_scores.iteritems():
             doc_score_vector = [score.get(key, 0) for key in
-                self.features_vector_key]
+                                self.features_vector_key]
             doc_score = utils.dot_product(doc_score_vector,
-                self.features_weights)
+                                          self.features_weights)
             results.append((doc_score, doc_score_vector, doc_id))
         return results
 
     query_title = property(lambda self: self.__query['title'])
     query_description = property(lambda self: self.__query['description'])
     compound_index = property(lambda self: self.__compound_index)
-
 
 
 class SharedSearchObject(object):
