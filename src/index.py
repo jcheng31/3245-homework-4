@@ -19,7 +19,7 @@ class IndexBuilder(object):
         self.m_file = {
             indexfields.DOC_GUID_MAP: dict(),
             indexfields.GUID_DOC_MAP: dict(),
-            indexfields.INDICES: dict(),
+            indexfields.ZONES: dict(),
             indexfields.FIELDS: dict(),
         }
         self.m_indices = dict()
@@ -51,7 +51,7 @@ class IndexBuilder(object):
 
         # Create an index for the specified field (key) if it does not already
         # exist in the dictionary/postings file.
-        indices = self.m_file[indexfields.INDICES]
+        indices = self.m_file[indexfields.ZONES]
         if key not in indices:
             indices[key] = {
                 indexfields.INDEX_DOCS: set(),
@@ -75,7 +75,7 @@ class IndexBuilder(object):
                 dictionary[term] = [_tuple]
 
     def serialize(self, pretty=False):
-        indices = self.m_file[indexfields.INDICES]
+        indices = self.m_file[indexfields.ZONES]
         for key in indices:
             # We convert the document-set for each index to a sorted list so
             # that it can be natively json serialised.

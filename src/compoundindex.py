@@ -10,7 +10,7 @@ class CompoundIndex(object):
 
         self.__gd_map = self.__m_file[indexfields.GUID_DOC_MAP]
         self.__dg_map = self.__m_file[indexfields.DOC_GUID_MAP]
-        self.__indices = self.__m_file[indexfields.INDICES]
+        self.__indices = self.__m_file[indexfields.ZONES]
         self.__fields = self.__m_file[indexfields.FIELDS]
 
         self.__remap()

@@ -90,12 +90,12 @@ class VSMAbstractMinusStopwords(VSMSingleFieldMinusStopwords):
 
 class VSMMultipleFields(VSMBase):
     """VSM feature using multiple indices."""
-    INDICES = []
+    ZONES = []
 
     def idf(self, term, compound_index):
         # HACK(michael): Calculate the idf from the idfs of the fields.
         documents_with_term = set()
-        for idx in self.INDICES:
+        for idx in self.ZONES:
             for doc_id, _ in compound_index.postings_list(idx, term):
                 documents_with_term.add(doc_id)
         document_freq = len(documents_with_term)
@@ -105,20 +105,20 @@ class VSMMultipleFields(VSMBase):
     @cache.naive_class_method_cache
     def number_of_docs_in_indices(self, compound_index):
         documents_in_index = set()
-        for idx in self.INDICES:
+        for idx in self.ZONES:
             for doc_id in compound_index.documents_in_index(idx):
                 documents_in_index.add(doc_id)
         return len(documents_in_index)
 
     def query_tokens(self, search):
         tokens = []
-        for idx in self.INDICES:
+        for idx in self.ZONES:
             tokens.extend(search.get_tokens_for(idx))
         return tokens
 
     def matches(self, term, compound_index):
         results = collections.defaultdict(lambda: 0)
-        for idx in self.INDICES:
+        for idx in self.ZONES:
             for doc_id, term_freq in compound_index.postings_list(idx, term):
                 results[doc_id] += term_freq
         return results.iteritems()
@@ -134,9 +134,9 @@ class VSMMultipleFieldsMinusStopwords(VSMMultipleFields):
 
 class VSMTitleAndAbstract(VSMMultipleFields):
     NAME = 'VSM_Title_and_Abstract'
-    INDICES = [patentfields.TITLE, patentfields.ABSTRACT]
+    ZONES = [patentfields.TITLE, patentfields.ABSTRACT]
 
 
 class VSMTitleAndAbstractMinusStopwords(VSMMultipleFieldsMinusStopwords):
     NAME = 'VSM_Title_and_Abstract_Minus_Stopwords'
-    INDICES = [patentfields.TITLE, patentfields.ABSTRACT]
+    ZONES = [patentfields.TITLE, patentfields.ABSTRACT]
