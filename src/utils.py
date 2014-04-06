@@ -33,11 +33,8 @@ def root_node_to_dictionary(root):
     return dict_representation
 
 
-def parse_query_file(file_path):
-    """Returns a dictionary representation of the query file."""
-    with open(file_path, 'r') as f:
-        xml = f.read()
-
+def parse_query_xml(xml):
+    """Returns a dictionary representation of the query xml."""
     root = ElementTree.fromstring(xml)
     retval = {}
     for child in root:

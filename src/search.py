@@ -49,12 +49,9 @@ class Search(object):
         (fields.CitationCount(),                    0.5),
     ]
 
-    def __init__(self, dictionary_file, postings_file, query_file):
-        self.dictionary_file = dictionary_file
-        self.postings_file = postings_file
-        self.query_file = query_file
-        self.__compound_index = compoundindex.CompoundIndex(dictionary_file)
-        self.__query = utils.parse_query_file(query_file)
+    def __init__(self, query_xml, compound_index):
+        self.__compound_index = compound_index
+        self.__query = utils.parse_query_xml(query_xml)
         self.__tokens = {
             patentfields.TITLE: tokenizer(self.query_title),
             patentfields.ABSTRACT: tokenizer(self.query_description),
@@ -164,7 +161,13 @@ def main(args):
     query_file = os.path.abspath(args.query)
     output_file = os.path.abspath(args.output)
 
-    s = Search(dictionary_file, postings_file, query_file)
+    # NOTE(michael): Do these things outside the search class to allow
+    # dependency injection at runtime/testing.
+    compound_index = compoundindex.CompoundIndex(dictionary_file)
+    with open(query_file, 'r') as f:
+        query_xml = f.read()
+
+    s = Search(query_xml, compound_index)
     results = s.execute()
 
     # Write results to file.
