@@ -4,15 +4,15 @@ index:
 
 search:
 	python src/search.py -d run/dictionary.txt -p run/postings.txt \
-		-q queries/q1.xml -o run/output.txt
+		-q queries/q1.xml -o run/results.txt
 
 search2:
 	python src/search.py -d run/dictionary.txt -p run/postings.txt \
-		-q queries/q2.xml -o run/output.txt
+		-q queries/q2.xml -o run/results.txt
 
 search3:
 	python src/search.py -d run/dictionary.txt -p run/postings.txt \
-		-q queries/q3.xml -o run/output.txt
+		-q queries/q3.xml -o run/results.txt
 
 learn:
 	python src/learn.py -d run/dictionary.txt

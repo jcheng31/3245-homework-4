@@ -6,6 +6,7 @@ import os
 import patentfields
 import utils
 
+from queryexpansion import expand, synonym_expansion
 from features import vsm, fields
 from parser import free_text as tokenizer
 
@@ -53,6 +54,11 @@ class Search(object):
         # fields only serve to boost scores of documents that are relevant.
         (fields.CitationCount(),                        0.5),
     ]
+    
+    # Declaration of query expanders to use.
+    EXPANSION_PROCS = [
+        synonym_expansion
+    ]
 
     def __init__(self, query_xml, compound_index):
         self.__compound_index = compound_index
@@ -60,8 +66,10 @@ class Search(object):
 
         # Note(Cam): Query expansion works on theses:
         self.__tokens = {
-            patentfields.TITLE: tokenizer(self.query_title),
-            patentfields.ABSTRACT: tokenizer(self.query_description),
+            patentfields.TITLE: expand(tokenizer(self.query_title),
+                                       Search.EXPANSION_PROCS),
+            patentfields.ABSTRACT: expand(tokenizer(self.query_description),
+                                          Search.EXPANSION_PROCS),
         }
 
         self.features, self.features_weights = zip(*self.FEATURES)
