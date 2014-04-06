@@ -9,7 +9,6 @@ import utils
 from queryexpansion import expand, synonym_expansion
 from features import vsm, fields
 from parser import free_text as tokenizer
-from cron import print_cron
 
 
 class Search(object):
@@ -185,7 +184,6 @@ def main(args):
 
 if __name__ == '__main__':
     print 'version: 1'
-    print_cron()
 
     parser = argparse.ArgumentParser(description='Patsnap assignment - Search')
     parser.add_argument('-d', '--dictionary', required=True,
