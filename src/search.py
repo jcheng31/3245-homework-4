@@ -41,12 +41,16 @@ class Search(object):
 
     # Declaration of features and their weights.
     FEATURES = [
-        (vsm.VectorSpaceModelTitle(),               4),
-        (vsm.VectorSpaceModelAbstract(),            2),
-        (vsm.VectorSpaceModelTitleAndAbstract(),    1),
+        (vsm.VSMTitle(),                                4),
+        (vsm.VSMAbstract(),                             2),
+        (vsm.VSMTitleAndAbstract(),                     1),
+
+        (vsm.VSMTitleMinusStopwords(),                  0),
+        (vsm.VSMAbstractMinusStopwords(),               0),
+        (vsm.VSMTitleAndAbstractMinusStopwords(),       0),
 
         # fields only serve to boost scores of documents that are relevant.
-        (fields.CitationCount(),                    0.5),
+        (fields.CitationCount(),                        0.5),
     ]
 
     def __init__(self, query_xml, compound_index):
@@ -59,10 +63,29 @@ class Search(object):
         self.features, self.features_weights = zip(*self.FEATURES)
         self.features_vector_key = [f.NAME for f in self.features]
 
+    def override_features_weights(self, weights):
+        """Overrides specified feature weights.
+
+        Used for learning/trainig the coefficients to fit the training data.
+        """
+        # new weights need to have the same cardinality since we do a
+        # dot-product at the end
+        assert len(weights) == len(self.features_weights)
+        self.old_features_weights = self.features_weights
+        self.features_weights = weights
+
     def get_tokens_for(self, index):
         return self.__tokens.get(index)
 
-    def execute(self):
+    def execute(self, verbose=False):
+        """Returns a list of document names that satisfy the query.
+
+        Documents are returned in order of relevance. If the verbose argument is
+        set, returns a list of lists, where each list item is of format:
+
+            [<score>, <feature vector scores>, doc_id]
+            ...
+        """
         shared_obj = SharedSearchObject()
 
         for feature in self.features:
@@ -78,44 +101,16 @@ class Search(object):
         results = self.calculate_score(shared_obj.doc_ids_to_scores)
         results.sort(reverse=True) # Highest score first.
 
-        # # tmp(michael)
-        # self.query1_debug(results)
+        if verbose:
+            retval = []
+            for elem in results:
+                elem = list(elem)
+                elem[-1] = self.compound_index.document_name_for_guid(str(elem[-1]))
+                retval.append(elem)
+            return retval
 
         return [self.compound_index.document_name_for_guid(str(elem[-1]))
             for elem in results]
-
-    def query1_debug(self, results):
-        # tmp(michael). debugging.
-        positive = [
-            "US20080250823A1", "EP1918442A2", "US5253080", "US20080016626A1",
-            "US20070289612A1", "EP2372006A2", "EP1918442A2", "US6170303",
-            "US5295373", "EP0735178A1", "US20100037661A1", "US20120097752A1",
-            "US5590551", "US20100236000A1", "WO2010055701A1", "US20110191965A1",
-            "EP2298978A2", "US20090241267A1", "WO2011066805A1", "EP1546447A1",
-            "US5432969", "WO2011015457A1", "US20080099052A1", "EP1918441A1",
-        ]
-
-        negative = [
-            "US20050189439A1", "US7131597", "US6427704", "EP0698680B1",
-            "WO2008038763A1", "WO2011104633A3", "WO2010140775A2",
-            "US20070119987A1", "US4889620", "WO1997028909A1", "US20070175502A1",
-            "WO2000028129A1", "EP2402494A1", "US5017343", "US8076117",
-            "US20020033550A1", "WO2003066229A1", "US5170942", "US20120118023A1",
-            "EP2194567B1", "US20110315796A1", "US4974375", "EP0266476A2",
-            "US4157922", "EP2361689A1",
-        ]
-
-        print "Positive"
-        for elem in results:
-            guid = self.compound_index.document_name_for_guid(str(elem[-1]))
-            if guid in positive:
-                print guid, elem
-
-        print "Negative"
-        for elem in results:
-            guid = self.compound_index.document_name_for_guid(str(elem[-1]))
-            if guid in negative:
-                print guid, elem
 
     def calculate_score(self, doc_ids_to_scores):
         """Returns a list of (score, doc_id).
