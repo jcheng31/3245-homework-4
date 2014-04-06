@@ -69,7 +69,14 @@ class Search(object):
         shared_obj = SharedSearchObject()
 
         for feature in self.features:
-            feature(self, shared_obj)
+            try:
+                feature(self, shared_obj)
+            except Exception, e:
+                # NOTE(michael): This is for the competition framework. (When an
+                # error occurs during search, there is no log/entry at all.
+                import traceback
+                tb = traceback.format_exc()
+                print "# Error in feature: %s\n%s" % (feature.NAME, tb)
 
         results = self.calculate_score(shared_obj.doc_ids_to_scores)
         results.sort(reverse=True) # Highest score first.
