@@ -1,11 +1,12 @@
 import collections
 import patentfields
+import utils
 
 from helpers import cache
 from vsmutils import *
 
 
-class VectorSpaceModelBase(object):
+class VSMBase(object):
     """Base VSM search feature."""
     NAME = ''
 
@@ -45,7 +46,7 @@ class VectorSpaceModelBase(object):
             shared_obj.set_feature_score(self.NAME, doc_id, score)
 
 
-class VectorSpaceModelSingleField(VectorSpaceModelBase):
+class VSMSingleField(VSMBase):
     """VSM feature using a single index."""
     INDEX = None
 
@@ -59,17 +60,35 @@ class VectorSpaceModelSingleField(VectorSpaceModelBase):
         return compound_index.postings_list(self.INDEX, term)
 
 
-class VectorSpaceModelTitle(VectorSpaceModelSingleField):
+class VSMSingleFieldMinusStopwords(VSMSingleField):
+    """VSM feature using a single field, removing stopwords."""
+    def query_tokens(self, search):
+        query_tokens = super(VSMSingleFieldMinusStopwords,
+            self).query_tokens(search)
+        return utils.without_stopwords(query_tokens)
+
+
+class VSMTitle(VSMSingleField):
     NAME = 'VSM_Title'
     INDEX = patentfields.TITLE
 
 
-class VectorSpaceModelAbstract(VectorSpaceModelSingleField):
+class VSMAbstract(VSMSingleField):
     NAME = 'VSM_Abstract'
     INDEX = patentfields.ABSTRACT
 
 
-class VectorSpaceModelMultipleFields(VectorSpaceModelBase):
+class VSMTitleMinusStopwords(VSMSingleFieldMinusStopwords):
+    NAME = 'VSM_Title_Minus_Stopwords'
+    INDEX = patentfields.TITLE
+
+
+class VSMAbstractMinusStopwords(VSMSingleFieldMinusStopwords):
+    NAME = 'VSM_Abstract_Minus_Stopwords'
+    INDEX = patentfields.ABSTRACT
+
+
+class VSMMultipleFields(VSMBase):
     """VSM feature using multiple indices."""
     INDICES = []
 
@@ -105,6 +124,19 @@ class VectorSpaceModelMultipleFields(VectorSpaceModelBase):
         return results.iteritems()
 
 
-class VectorSpaceModelTitleAndAbstract(VectorSpaceModelMultipleFields):
+class VSMMultipleFieldsMinusStopwords(VSMMultipleFields):
+    """VSM feature using multiple indices, removing stopwords."""
+    def query_tokens(self, search):
+        query_tokens = super(VSMMultipleFieldsMinusStopwords,
+            self).query_tokens(search)
+        return utils.without_stopwords(query_tokens)
+
+
+class VSMTitleAndAbstract(VSMMultipleFields):
     NAME = 'VSM_Title_and_Abstract'
+    INDICES = [patentfields.TITLE, patentfields.ABSTRACT]
+
+
+class VSMTitleAndAbstractMinusStopwords(VSMMultipleFieldsMinusStopwords):
+    NAME = 'VSM_Title_and_Abstract_Minus_Stopwords'
     INDICES = [patentfields.TITLE, patentfields.ABSTRACT]

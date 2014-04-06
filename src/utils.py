@@ -1,6 +1,7 @@
 import xml.etree.ElementTree as ElementTree
 
 from itertools import izip
+from nltk.corpus import stopwords
 
 
 def xml_file_to_dict(file_path):
@@ -51,3 +52,9 @@ def dot_product(v1, v2):
     Expects vectors as an iterable. Returns a number.
     """
     return sum(x * y for x, y in izip(v1, v2))
+
+
+def without_stopwords(word_lst):
+    """Given a list of strings, returns a list without stopwords."""
+    stop = stopwords.words('english')
+    return [word for word in word_lst if word not in stop]
