@@ -40,9 +40,6 @@ env/
 # Corpus files
 patsnap-corpus
 
-# Sample queries
-queries
-
 # Default output
 dictionary.txt
 postings.txt
