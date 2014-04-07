@@ -17,7 +17,7 @@ __stemmer = PorterStemmer()
 __bing_stemmer = BingSynonyms(USER, API_KEY, CACHE_FILE)
 
 
-def expand(tokens, processes=[]):
+def expand(tokens, *processes):
     """
     Applies a set of expansion processes to a list of tokens.
     """
