@@ -2,6 +2,7 @@ import xml.etree.ElementTree as ElementTree
 
 from itertools import izip
 from nltk.corpus import stopwords
+from nltk.corpus import wordnet
 
 
 def xml_file_to_dict(file_path):
@@ -55,3 +56,11 @@ def without_stopwords(word_lst):
     """Given a list of strings, returns a list without stopwords."""
     stop = stopwords.words('english')
     return [word for word in word_lst if word not in stop]
+
+
+def synonyms(word):
+    """Given a word, returns a list of synonyms from WordNet."""
+    synsets = wordnet.synsets(word)
+    all_synonyms = [lemma.name for syn in synsets for lemma in syn.lemmas]
+    unique_synonyms = set(all_synonyms)
+    return sorted(list(unique_synonyms))
