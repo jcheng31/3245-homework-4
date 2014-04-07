@@ -7,7 +7,7 @@ import os
 import patentfields
 import utils
 
-from parser import free_text
+from tokenizer import free_text
 
 
 class IndexBuilder(object):
