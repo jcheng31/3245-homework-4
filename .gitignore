@@ -41,5 +41,4 @@ env/
 patsnap-corpus
 
 # Default output
-dictionary.txt
 postings.txt
