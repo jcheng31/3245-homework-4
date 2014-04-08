@@ -30,14 +30,15 @@ class IPCSectionLabels(vsm.VSMSingleFieldMinusStopwords):
                         patentfields.IPC_SECTION):
                     if val == section:
                         retval.append((doc_id, 1))
-                print retval
                 return retval
         return []
 
 
 class IPCSectionLabelsTitle(IPCSectionLabels):
     NAME = 'IPC_Section_Labels_Title'
+    INDEX = patentfields.TITLE
 
 
 class IPCSectionLabelsAbstract(IPCSectionLabels):
     NAME = 'IPC_Section_Labels_Abstract'
+    INDEX = patentfields.ABSTRACT
