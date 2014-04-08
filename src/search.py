@@ -72,6 +72,7 @@ class Search(object):
 
         self.features, self.features_weights = zip(*self.FEATURES)
         self.features_vector_key = [f.NAME for f in self.features]
+        self.shared_search_obj = SharedSearchObject()
 
     def override_features_weights(self, weights):
         """Overrides specified feature weights.
@@ -93,20 +94,11 @@ class Search(object):
         # Expand query
         return expand(tokens, *self.EXPANSION_PROCS)
 
-    def execute(self, verbose=False):
-        """Returns a list of document names that satisfy the query.
-
-        Documents are returned in order of relevance. If the verbose argument
-        is set, returns a list of lists, where each list item is of format:
-
-            [<score>, <feature vector scores>, doc_id]
-            ...
-        """
-        shared_obj = SharedSearchObject()
-
+    def execute(self):
+        """Executes the search by running all features."""
         for feature in self.features:
             try:
-                feature(self, shared_obj)
+                feature(self, self.shared_search_obj)
             except Exception, e:
                 # NOTE(michael): This is for the competition framework. (When
                 # an error occurs during search, there is no log/entry at all.
@@ -114,7 +106,22 @@ class Search(object):
                 tb = traceback.format_exc()
                 print "# Error in feature: %s\n%s" % (feature.NAME, tb)
 
-        results = self.calculate_score(shared_obj.doc_ids_to_scores)
+        return self
+
+    def results(self, verbose=False):
+        """Returns a list of documents that match to search query.
+
+        Documents are returned in order of relevance. If the verbose argument
+        is set, returns a list of lists, where each list item is of format:
+
+            [<score>, <feature vector scores>, doc_id]
+            ...
+
+        NOTE: This is separated from execute so we can vary weights during the
+        learning phase without recomputing the unweighted feature scores.
+        """
+        results = self.calculate_score(
+            self.shared_search_obj.doc_ids_to_scores)
         results.sort(reverse=True)  # Highest score first.
 
         if verbose:
@@ -179,7 +186,7 @@ def main(args):
         query_xml = f.read()
 
     s = Search(query_xml, compound_index)
-    results = s.execute()
+    results = s.execute().results()
 
     # Write results to file.
     with open(output_file, 'w+') as output:
