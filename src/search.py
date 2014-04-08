@@ -82,7 +82,6 @@ class Search(object):
         # new weights need to have the same cardinality since we do a
         # dot-product at the end
         assert len(weights) == len(self.features_weights)
-        self.old_features_weights = self.features_weights
         self.features_weights = weights
 
     @cache.naive_class_method_cache
@@ -112,7 +111,8 @@ class Search(object):
         """Returns a list of documents that match to search query.
 
         Documents are returned in order of relevance. If the verbose argument
-        is set, returns a list of lists, where each list item is of format:
+        If the verbose argument is set, returns a dictionary keyed by document
+        name and with value:
 
             [<score>, <feature vector scores>, doc_id]
             ...
@@ -125,12 +125,11 @@ class Search(object):
         results.sort(reverse=True)  # Highest score first.
 
         if verbose:
-            retval = []
+            retval = {}
             for elem in results:
-                elem = list(elem)
-                elem[-1] = self.compound_index.\
-                    document_name_for_guid(str(elem[-1]))
-                retval.append(elem)
+                doc_name = self.compound_index.document_name_for_guid(
+                    str(elem[-1]))
+                retval[doc_name] = elem
             return retval
 
         return [self.compound_index.document_name_for_guid(str(elem[-1]))
