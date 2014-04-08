@@ -24,8 +24,8 @@ class ClusterBase(object):
                 # NOTE(michael): We use a not so arbitrary weight here (The
                 # intuition is that is you score pretty well (roughly), your
                 # enum value counts for a little more.
-                weight = sum(v for k, v in score_dict.iteritems())
-
+                weight = sum(v for k, v in score_dict.iteritems()
+                    if not k.startswith('Cluster'))
                 cluster[val] += weight
                 cluster_count[val] += 1
 
