@@ -110,7 +110,7 @@ def naive_class_method_cache(func):
     """Naive decorator to cache methods."""
     __cache = {}
     def cache_key(*args, **kwargs):
-        return "%s:%s" % (args[1:], kwargs)
+        return "%s:%s:%s" % (func.__name__, args[0][1:], kwargs)
 
     def new_func(*args, **kwargs):
         key = cache_key(args, kwargs)

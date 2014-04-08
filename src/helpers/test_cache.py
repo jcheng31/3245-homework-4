@@ -80,6 +80,10 @@ def test_naive_class_method_cache():
         def blah(self):
             x['val'] += 1
 
+        @naive_class_method_cache
+        def foo(self, val):
+            return val
+
     t = Test()
 
     assert_eq(0, x['val'])
@@ -87,6 +91,9 @@ def test_naive_class_method_cache():
     assert_eq(1, x['val'])
     t.blah()
     assert_eq(1, x['val'])
+
+    assert_eq(1, t.foo(1))
+    assert_eq(2, t.foo(2))
 
     # Invalidate
     t.blah.invalidate()
