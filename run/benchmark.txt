@@ -1,0 +1,28 @@
+Query 1
+Average F: 0.454107787644442
+Average Precision: 0.381844869425251
+Average Recall: 0.538727136991415
+Count: 1636
+Correct: 50
+Points Judged: 188
+Query 2
+Average F: 0.34434719289171
+Average Precision: 0.347510142911695
+Average Recall: 0.371603447504776
+Count: 1636
+Correct: 311
+Points Judged: 1023
+Query 3
+Average F: 0.28282499588882
+Average Precision: 0.21244336339654
+Average Recall: 0.353742599951342
+Count: 1636
+Correct: 44
+Points Judged: 209
+Query 4
+Average F: 0.287364128340936
+Average Precision: 0.18139002922446
+Average Recall: 0.388790386130812
+Count: 1636
+Correct: 33
+Points Judged: 216
