@@ -1,28 +1,28 @@
 Query 1
-Average F: 0.469475884373027
-Average Precision: 0.380389465978106
-Average Recall: 0.568211573710395
-Count: 2237
-Correct: 51
-Points Judged: 201
+Average F: 0.530422503549902
+Average Precision: 0.456017400884897
+Average Recall: 0.631839499739445
+Count: 2244
+Correct: 52
+Points Judged: 202
 Query 2
-Average F: 0.401550630649285
-Average Precision: 0.319806264584594
-Average Recall: 0.477867522413495
-Count: 2237
-Correct: 448
-Points Judged: 1442
+Average F: 0.58618128915342
+Average Precision: 0.451285680873612
+Average Recall: 0.688919582565995
+Count: 2244
+Correct: 449
+Points Judged: 1448
 Query 3
-Average F: 0.332901449498499
-Average Precision: 0.194661679290061
-Average Recall: 0.476369526233585
-Count: 2237
+Average F: 0.355080982102558
+Average Precision: 0.196938397893518
+Average Recall: 0.508590270145196
+Count: 2244
 Correct: 59
 Points Judged: 293
 Query 4
-Average F: 0.294373143961433
-Average Precision: 0.139201127040299
-Average Recall: 0.475931292853608
-Count: 2237
+Average F: 0.330240481650954
+Average Precision: 0.151650650138978
+Average Recall: 0.533540680002827
+Count: 2244
 Correct: 47
 Points Judged: 301

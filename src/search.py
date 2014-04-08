@@ -44,34 +44,36 @@ class Search(object):
 
     # Declaration of features and their weights.
     FEATURES = [
-        (vsm.VSMTitle(),                                4),
-        (vsm.VSMAbstract(),                             2),
-        (vsm.VSMTitleAndAbstract(),                     1),
+        (vsm.VSMTitle(),                                0),
+        (vsm.VSMAbstract(),                             0),
+        (vsm.VSMTitleAndAbstract(),                     0),
 
-        (vsm.VSMTitleMinusStopwords(),                  0),
-        (vsm.VSMAbstractMinusStopwords(),               0),
-        (vsm.VSMTitleAndAbstractMinusStopwords(),       0),
+        (vsm.VSMTitleMinusStopwords(),                  8),
+        (vsm.VSMAbstractMinusStopwords(),               4),
+        (vsm.VSMTitleAndAbstractMinusStopwords(),       2),
 
-        (ipc.IPCSectionLabelsTitle(),                   0),
-        (ipc.IPCSectionLabelsAbstract(),                0),
+        (ipc.IPCSectionLabelsTitle(),                   1),
+        (ipc.IPCSectionLabelsAbstract(),                1),
 
         # clusters
         (cluster.cluster_feature_generator(
-            patentfields.IPC_SECTION)(),                0),
+            patentfields.IPC_SECTION)(),                1),
         (cluster.cluster_feature_generator(
-            patentfields.IPC_CLASS)(),                  0),
+            patentfields.IPC_CLASS)(),                  2),
         (cluster.cluster_feature_generator(
-            patentfields.IPC_GROUP)(),                  0),
+            patentfields.IPC_GROUP)(),                  4),
         (cluster.cluster_feature_generator(
-            patentfields.IPC_PRIMARY)(),                0),
+            patentfields.IPC_PRIMARY)(),                6),
         (cluster.cluster_feature_generator(
-            patentfields.IPC_SUBCLASS)(),               0),
+            patentfields.IPC_SUBCLASS)(),               8),
         (cluster.cluster_feature_generator(
-            patentfields.ALL_UPC)(),                    0),
+            patentfields.ALL_IPC)(),                    9),
         (cluster.cluster_feature_generator(
-            patentfields.UPC_PRIMARY)(),                0),
+            patentfields.ALL_UPC)(),                    2),
         (cluster.cluster_feature_generator(
-            patentfields.UPC_CLASS)(),                  0),
+            patentfields.UPC_PRIMARY)(),                4),
+        (cluster.cluster_feature_generator(
+            patentfields.UPC_CLASS)(),                  8),
 
         (fields.CitationCount(),                        0.5),
 
@@ -85,7 +87,7 @@ class Search(object):
     ]
 
     # Arbitrary minimum score of a relevant document.
-    MIN_SCORE = 0.1
+    MIN_SCORE = 0
 
     def __init__(self, query_xml, compound_index):
         self.__compound_index = compound_index
@@ -149,6 +151,7 @@ class Search(object):
         results = self.calculate_score(
             self.shared_search_obj.doc_ids_to_scores)
         results.sort(reverse=True)  # Highest score first.
+        results = [r for r in results if r[0] > self.MIN_SCORE]
 
         if verbose:
             retval = {}
@@ -172,8 +175,7 @@ class Search(object):
                                 self.features_vector_key]
             doc_score = utils.dot_product(doc_score_vector,
                                           self.features_weights)
-            if doc_score > self.MIN_SCORE:
-                results.append((doc_score, doc_score_vector, doc_id))
+            results.append((doc_score, doc_score_vector, doc_id))
         return results
 
     query_title = property(lambda self: self.__query['title'])
