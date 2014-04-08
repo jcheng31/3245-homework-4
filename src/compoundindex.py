@@ -81,7 +81,7 @@ class CompoundIndex(object):
         retval = {}
         for guid, fields in self.__fields.iteritems():
             if field in fields:
-                retvat[guid] = fields.get(field)
+                retval[guid] = fields.get(field)
         return retval
 
     def terms_in_index(self, index_name):

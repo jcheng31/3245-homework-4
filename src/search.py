@@ -6,7 +6,7 @@ import os
 import patentfields
 import utils
 
-from features import vsm, fields, ipc
+from features import vsm, fields, ipc, cluster
 from helpers import cache
 from parser import free_text as tokenizer
 from queryexpansion import expand, synonym_expansion
@@ -54,6 +54,24 @@ class Search(object):
 
         (ipc.IPCSectionLabelsTitle(),                   0),
         (ipc.IPCSectionLabelsAbstract(),                0),
+
+        # clusters
+        (cluster.cluster_feature_generator(
+            patentfields.IPC_SECTION)(),                0),
+        (cluster.cluster_feature_generator(
+            patentfields.IPC_CLASS)(),                  0),
+        (cluster.cluster_feature_generator(
+            patentfields.IPC_GROUP)(),                  0),
+        (cluster.cluster_feature_generator(
+            patentfields.IPC_PRIMARY)(),                0),
+        (cluster.cluster_feature_generator(
+            patentfields.IPC_SUBCLASS)(),               0),
+        (cluster.cluster_feature_generator(
+            patentfields.ALL_UPC)(),                    0),
+        (cluster.cluster_feature_generator(
+            patentfields.UPC_PRIMARY)(),                0),
+        (cluster.cluster_feature_generator(
+            patentfields.UPC_CLASS)(),                  0),
 
         # fields only serve to boost scores of documents that are relevant.
         (fields.CitationCount(),                        0.5),
