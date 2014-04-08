@@ -11,9 +11,8 @@ class FieldFeatureBase(object):
 
     def __call__(self, search, shared_obj):
         for doc_id, val in search.compound_index.value_for_field(self.FIELD):
-            # Only add score for fields if object already has a score.
-            if shared_obj.has_score(doc_id):
-                shared_obj.set_feature_score(self.NAME, doc_id, self.score(val))
+            shared_obj.set_feature_score(self.NAME, doc_id, self.score(val))
+
 
 class CitationCount(FieldFeatureBase):
     NAME = 'citationcount'
