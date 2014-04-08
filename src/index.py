@@ -126,6 +126,10 @@ class DirectoryProcessor(object):
     FIELDS = [
         # Citations
         patentfields.CITED_BY_COUNT,
+        patentfields.CITES,
+
+        # Family members
+        patentfields.FAMILY_MEMBERS,
 
         # IPC classifications
         patentfields.IPC_SECTION,

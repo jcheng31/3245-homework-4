@@ -6,7 +6,7 @@ import os
 import patentfields
 import utils
 
-from features import vsm, fields, ipc, cluster
+from features import vsm, fields, ipc, cluster, relation
 from helpers import cache
 from parser import free_text as tokenizer
 from queryexpansion import expand, synonym_expansion
@@ -73,8 +73,10 @@ class Search(object):
         (cluster.cluster_feature_generator(
             patentfields.UPC_CLASS)(),                  0),
 
-        # fields only serve to boost scores of documents that are relevant.
         (fields.CitationCount(),                        0.5),
+
+        (relation.Citations(),                          0),
+        (relation.FamilyMembers(),                      0),
     ]
 
     # Declaration of query expanders to use.
