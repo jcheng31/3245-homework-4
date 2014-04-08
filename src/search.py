@@ -84,6 +84,9 @@ class Search(object):
         synonym_expansion
     ]
 
+    # Arbitrary minimum score of a relevant document.
+    MIN_SCORE = 0.1
+
     def __init__(self, query_xml, compound_index):
         self.__compound_index = compound_index
         self.__query = utils.parse_query_xml(query_xml)
@@ -169,7 +172,8 @@ class Search(object):
                                 self.features_vector_key]
             doc_score = utils.dot_product(doc_score_vector,
                                           self.features_weights)
-            results.append((doc_score, doc_score_vector, doc_id))
+            if doc_score > self.MIN_SCORE:
+                results.append((doc_score, doc_score_vector, doc_id))
         return results
 
     query_title = property(lambda self: self.__query['title'])
