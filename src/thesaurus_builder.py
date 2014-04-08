@@ -39,11 +39,9 @@ def build_thesaurus(words, outfile):
     print 'Words: {}'.format(len(words))
     count = 0
     for w in words:
-        print w
         count += 1
         if count % 10 == 0:
-            # print 'Processed: {} of {}'.format(count, len(words))
-            pass
+            print 'Processed: {} of {}'.format(count, len(words))
         url = ENDPOINT.format(term=w)
         response = requests.get(url, headers=HEADERS)
         json_obj = response.json()
