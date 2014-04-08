@@ -1,6 +1,8 @@
 import json
 import indexfields
 
+from helpers import cache
+
 
 class CompoundIndex(object):
     def __init__(self, dict_path):
@@ -60,6 +62,7 @@ class CompoundIndex(object):
         else:
             return self.__indices[index_name][indexfields.INDEX_DOCS]
 
+    @cache.naive_class_method_cache
     def value_for_field(self, field):
         """
         Returns a list of (guid, fieid_value) for the given field.
@@ -68,6 +71,17 @@ class CompoundIndex(object):
         for guid, fields in self.__fields.iteritems():
             if field in fields:
                 retval.append((guid, fields.get(field)))
+        return retval
+
+    @cache.naive_class_method_cache
+    def dict_for_field(self, field):
+        """
+        Returns a dict of <doc_id>: value for the given field.
+        """
+        retval = {}
+        for guid, fields in self.__fields.iteritems():
+            if field in fields:
+                retvat[guid] = fields.get(field)
         return retval
 
     def terms_in_index(self, index_name):

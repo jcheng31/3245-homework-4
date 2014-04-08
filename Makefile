@@ -14,6 +14,10 @@ search3:
 	python src/search.py -d run/dictionary.txt -p run/postings.txt \
 		-q queries/q3.xml -o run/results.txt
 
+search5:
+	python src/search.py -d run/dictionary.txt -p run/postings.txt \
+		-q queries/q5.xml -o run/results.txt
+
 learn:
 	python src/learn.py -d run/dictionary.txt
 

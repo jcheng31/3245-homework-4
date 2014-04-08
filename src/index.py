@@ -124,9 +124,13 @@ class DirectoryProcessor(object):
     ]
 
     FIELDS = [
+        # Citations
         patentfields.CITED_BY_COUNT,
         patentfields.CITED_BY_WITHIN_THREE_YEARS,
         patentfields.CITED_BY_WITHIN_FIVE_YEARS,
+
+        # IPC classifications
+        patentfields.IPC_SECTION,
     ]
 
     def __init__(self, doc_dir, indexer, free_text_tokenizer=None):

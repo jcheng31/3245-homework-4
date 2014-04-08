@@ -6,7 +6,7 @@ import os
 import patentfields
 import utils
 
-from features import vsm, fields
+from features import vsm, fields, ipc
 from helpers import cache
 from parser import free_text as tokenizer
 from queryexpansion import expand, synonym_expansion
@@ -51,6 +51,9 @@ class Search(object):
         (vsm.VSMTitleMinusStopwords(),                  0),
         (vsm.VSMAbstractMinusStopwords(),               0),
         (vsm.VSMTitleAndAbstractMinusStopwords(),       0),
+
+        (ipc.IPCSectionLabelsTitle(),                   0),
+        (ipc.IPCSectionLabelsAbstract(),                0),
 
         # fields only serve to boost scores of documents that are relevant.
         (fields.CitationCount(),                        0.5),
