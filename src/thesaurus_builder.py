@@ -21,7 +21,7 @@ def extract_nouns(words):
     pos_words = pos_tag(words)
     nouns = set()
     for token, pos in pos_words:
-        if pos == 'NN':
+        if pos in ['NN', 'JJ']:
             nouns.add(token)
     return list(nouns)
 
