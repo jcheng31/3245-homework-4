@@ -1,5 +1,6 @@
 import argparse
 import compoundindex
+import json
 import os
 import scipy.optimize
 import search
@@ -105,7 +106,9 @@ def learn(compound_index):
 
 def main(args):
     dictionary_file = os.path.abspath(args.dictionary)
-    compound_index = compoundindex.CompoundIndex(dictionary_file)
+    with open(dictionary_file, 'r') as f:
+        json_obj = json.load(f)
+    compound_index = compoundindex.CompoundIndex(json_obj)
     learn(compound_index)
 
 

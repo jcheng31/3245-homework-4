@@ -1,15 +1,11 @@
-import json
 import indexfields
 
 from helpers import cache
 
 
 class CompoundIndex(object):
-    def __init__(self, dict_path):
-        self.__path = dict_path
-        with open(self.__path, 'r') as f:
-            self.__m_file = json.load(f)
-
+    def __init__(self, json_obj):
+        self.__m_file = json_obj
         self.__gd_map = self.__m_file[indexfields.GUID_DOC_MAP]
         self.__dg_map = self.__m_file[indexfields.DOC_GUID_MAP]
         self.__indices = self.__m_file[indexfields.ZONES]

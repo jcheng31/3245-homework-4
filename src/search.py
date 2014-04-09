@@ -2,6 +2,7 @@
 import argparse
 import collections
 import compoundindex
+import json
 import os
 import patentfields
 import utils
@@ -204,7 +205,11 @@ def main(args):
 
     # NOTE(michael): Do these things outside the search class to allow
     # dependency injection at runtime/testing.
-    compound_index = compoundindex.CompoundIndex(dictionary_file)
+    with open(dictionary_file, 'r') as f:
+        json_obj = json.load(f)
+
+    compound_index = compoundindex.CompoundIndex(json_obj)
+
     with open(query_file, 'r') as f:
         query_xml = f.read()
 
