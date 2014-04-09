@@ -24,7 +24,7 @@ class VSMBase(object):
 
         query_tokens = self.query_tokens(search)
         query_tf = collections.Counter(query_tokens)
-        query_stems = map(lambda x: return x.stem, set(query_tokens))
+        query_stems = map(lambda x: x.stem, set(query_tokens))
         query_terms_sorted = sorted(query_stems)
 
         # NOTE(michael): Do the idf weighting on the query vector so we only do

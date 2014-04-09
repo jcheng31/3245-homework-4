@@ -1,32 +1,32 @@
 Query 1
 # Copyright 2006 © by Min-Yen Kan
-Average F: 0.525880319535792
-Average Precision: 0.450554919886338
-Average Recall: 0.627323258641651
-Count: 2244
-Correct: 52
-Points Judged: 202
+Average F: 0.112502457723792
+Average Precision: 0.134152485309676
+Average Recall: 0.113408521303258
+Count: 591
+Correct: 16
+Points Judged: 84
 Query 2
 # Copyright 2006 © by Min-Yen Kan
-Average F: 0.585750941056131
-Average Precision: 0.450513851129407
-Average Recall: 0.688517856498035
-Count: 2244
-Correct: 449
-Points Judged: 1448
+Average F: 0.183922699438953
+Average Precision: 0.35957843469566
+Average Recall: 0.169550783276273
+Count: 591
+Correct: 157
+Points Judged: 420
 Query 3
 # Copyright 2006 © by Min-Yen Kan
-Average F: 0.356290408521295
-Average Precision: 0.197889364200369
-Average Recall: 0.510094290507318
-Count: 2244
-Correct: 59
-Points Judged: 293
+Average F: 0.113610932951288
+Average Precision: 0.34934132179816
+Average Recall: 0.0996404725218284
+Count: 591
+Correct: 13
+Points Judged: 33
 Query 4
 # Copyright 2006 © by Min-Yen Kan
-Average F: 0.330047265099365
-Average Precision: 0.151563995529771
-Average Recall: 0.533257934544425
-Count: 2244
-Correct: 47
-Points Judged: 301
+Average F: 0.224031276981365
+Average Precision: 0.330466982426846
+Average Recall: 0.215130023640662
+Count: 591
+Correct: 21
+Points Judged: 54
