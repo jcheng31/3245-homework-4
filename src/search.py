@@ -5,6 +5,7 @@ import compoundindex
 import os
 import patentfields
 import utils
+import string
 
 from features import vsm, fields, ipc, cluster, relation
 from helpers import cache
@@ -88,9 +89,9 @@ class Search(object):
         self.__compound_index = compound_index
         self.__query = utils.parse_query_xml(query_xml)
 
-        self.__tokens = {
-            patentfields.TITLE: tokenizer(self.query_title),
-            patentfields.ABSTRACT: tokenizer(self.query_description),
+        self.__text = {
+            patentfield.TITLE: self.query_title,
+            patentfield.ABSTRACT: self.query_description
         }
 
         self.features, self.features_weights = zip(*self.FEATURES)
@@ -108,12 +109,14 @@ class Search(object):
         self.features_weights = weights
 
     @cache.naive_class_method_cache
-    def get_tokens_for(self, index, expand_query=False):
-        tokens = self.__tokens.get(index)
-        if not expand_query:
-            return tokens
+    def get_tokens_for(self, index, unstemmed=False):
+        raw_text = self.__text.get(index)
+        if not unstemmed:
+            words = raw_text.split()
+            stripped = [x.strip(string.punctuation) for x in words]
+            return stripped
 
-        # Expand query
+        tokens = tokenizer(raw_text)
         return tokens
 
     def execute(self):
