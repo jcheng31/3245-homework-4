@@ -2,7 +2,7 @@ import json
 
 
 class Thesaurus(object):
-    def __init__(self, thesaurus):
+    def __init__(self, thesaurus='../run/thesaurus.json'):
         with open(thesaurus, 'r') as f:
             self.__backing = json.load(f)
 
