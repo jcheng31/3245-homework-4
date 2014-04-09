@@ -1,11 +1,11 @@
 import collections
 import patentfields
 import utils
-import tokenizer
 
 from helpers import cache
 from vsmutils import *
 from thesaurus import Thesaurus
+from tokenizer import free_text as tokenizer
 
 
 class VSMBase(object):
@@ -161,7 +161,7 @@ class VSMSingleFieldMinusStopwordsPlusExpansion(VSMSingleFieldMinusStopwords):
         thesaurus = Thesaurus()
         synonyms = thesaurus[term]
         for synonym in synonyms:
-            postings = compound_index.postings_list(self.INDEX, tokenizer.free_text(synonym))
+            postings = compound_index.postings_list(self.INDEX, tokenizer(synonym))
             term_postings = term_postings.union(postings)
 
         return sorted(term_postings)
