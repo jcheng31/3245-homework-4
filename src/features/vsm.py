@@ -48,11 +48,11 @@ class VSMBase(object):
             shared_obj.set_feature_score(self.NAME, doc_id, score)
 
     def get_stem_unstemmed_pairs(self, index, search):
-        tokens = search.get_tokens_for(index)
+        stemmed = search.get_tokens_for(index)
         unstemmed = search.get_tokens_for(index, unstemmed=True)
 
         Token = collections.namedtuple('Token', 'stem unstemmed')
-        return map(Token, tokens, unstemmed)
+        return map(Token, stemmed, unstemmed)
 
 
 class VSMSingleField(VSMBase):
