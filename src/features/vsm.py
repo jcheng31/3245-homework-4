@@ -54,7 +54,14 @@ class VSMSingleField(VSMBase):
         return compound_index.inverse_document_frequency(self.INDEX, term)
 
     def query_tokens(self, search):
-        return search.get_tokens_for(self.INDEX)
+        tokens = search.get_tokens_for(self.INDEX)
+        if self.INDEX == patentfields.TITLE:
+            unstemmed = search.query_title
+        else:
+            unstemmed = search.query_description
+
+        Token = collections.namedtuple('Token', 'stem unstemmed')
+        return map(Token, tokens, unstemmed)
 
     def matches(self, term, compound_index):
         return compound_index.postings_list(self.INDEX, term)
