@@ -39,23 +39,29 @@ def build_thesaurus(words, outfile):
     print 'Words: {}'.format(len(words))
     count = 0
     for w in words:
-        print w
-        count += 1
-        if count % 10 == 0:
-            # print 'Processed: {} of {}'.format(count, len(words))
-            pass
-        url = ENDPOINT.format(term=w)
-        response = requests.get(url, headers=HEADERS)
-        json_obj = response.json()
+        try:
+            count += 1
+            if count % 10 == 0:
+                print 'Processed: {} of {}'.format(count, len(words))
+            url = ENDPOINT.format(term=w)
+            response = requests.get(url, headers=HEADERS)
+            json_obj = response.json()
 
-        # Parse API response.
-        trr = json_obj[ARRARR]
-        if type(trr) is not dict:
-            # Word not found in thesaurus API.
-            continue
-        synonyms = trr[ARR][u'Term']
-        if type(synonyms) is not list:
-            synonyms = [synonyms]
+            # Parse API response.
+            trr = json_obj[ARRARR]
+            if type(trr) is not dict:
+                # Word not found in thesaurus API.
+                continue
+            trr_trr = trr[ARR]
+            if type(trr_trr) is not dict:
+                # wat...
+                continue
+            synonyms = trr_trr[u'Term']
+            if type(synonyms) is not list:
+                # No synonyms found.
+                synonyms = [synonyms]
+        except Exception:
+            print w
 
         thesaurus[w] = synonyms
     print 'Writing file...'
