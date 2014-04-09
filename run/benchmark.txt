@@ -1,4 +1,5 @@
 Query 1
+# Copyright 2006 © by Min-Yen Kan
 Average F: 0.525880319535792
 Average Precision: 0.450554919886338
 Average Recall: 0.627323258641651
@@ -6,6 +7,7 @@ Count: 2244
 Correct: 52
 Points Judged: 202
 Query 2
+# Copyright 2006 © by Min-Yen Kan
 Average F: 0.585750941056131
 Average Precision: 0.450513851129407
 Average Recall: 0.688517856498035
@@ -13,6 +15,7 @@ Count: 2244
 Correct: 449
 Points Judged: 1448
 Query 3
+# Copyright 2006 © by Min-Yen Kan
 Average F: 0.356290408521295
 Average Precision: 0.197889364200369
 Average Recall: 0.510094290507318
@@ -20,6 +23,7 @@ Count: 2244
 Correct: 59
 Points Judged: 293
 Query 4
+# Copyright 2006 © by Min-Yen Kan
 Average F: 0.330047265099365
 Average Precision: 0.151563995529771
 Average Recall: 0.533257934544425

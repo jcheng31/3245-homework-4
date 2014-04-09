@@ -31,13 +31,13 @@ submission:
 	rm -rf $(matric_no)
 
 mark_fast:
-	time python src/search.py -d run/dictionary.txt -p run/postings.txt \
+	python src/search.py -d run/dictionary.txt -p run/postings.txt \
 		-q benchmark/q1.xml -o run/br1.txt
-	time python src/search.py -d run/dictionary.txt -p run/postings.txt \
+	python src/search.py -d run/dictionary.txt -p run/postings.txt \
 		-q benchmark/q1.xml -o run/br2.txt
-	time python src/search.py -d run/dictionary.txt -p run/postings.txt \
+	python src/search.py -d run/dictionary.txt -p run/postings.txt \
 		-q benchmark/q1.xml -o run/br3.txt
-	time python src/search.py -d run/dictionary.txt -p run/postings.txt \
+	python src/search.py -d run/dictionary.txt -p run/postings.txt \
 		-q benchmark/q1.xml -o run/br4.txt
 	echo Query 1 > run/benchmark.txt
 	benchmark/eval.pl run/br1.txt benchmark/q1-qrels.txt >> run/benchmark.txt
