@@ -9,7 +9,6 @@ import utils
 from features import vsm, fields, ipc, cluster, relation
 from helpers import cache
 from parser import free_text as tokenizer
-from queryexpansion import expand, synonym_expansion
 
 
 class Search(object):
@@ -81,10 +80,6 @@ class Search(object):
         (relation.FamilyMembers(),                      0),
     ]
 
-    # Declaration of query expanders to use.
-    EXPANSION_PROCS = [
-        synonym_expansion
-    ]
 
     # Arbitrary minimum score of a relevant document.
     MIN_SCORE = 0
@@ -119,7 +114,7 @@ class Search(object):
             return tokens
 
         # Expand query
-        return expand(tokens, *self.EXPANSION_PROCS)
+        return tokens
 
     def execute(self):
         """Executes the search by running all features."""
