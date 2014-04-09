@@ -53,10 +53,10 @@ def dot_product(v1, v2):
 
 
 def without_stopwords(tuples):
-    """Given a list of stem-unstemmed tuples, returns a list of tuples 
+    """Given a list of stem-unstemmed tuples, returns a list of tuples
     without stopwords."""
     stop = stopwords.words('english')
-    return filter(lambda x: x.unstemmed not in stop, tuples)
+    return filter(lambda x: x.stem not in stop, tuples)
 
 
 def synonyms(word):

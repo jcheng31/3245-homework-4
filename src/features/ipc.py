@@ -24,7 +24,7 @@ class IPCSectionLabels(vsm.VSMSingleFieldMinusStopwords):
 
     def matches(self, term, compound_index):
         for section, tokens in IPC_SECTIONS.iteritems():
-            if term in tokens:
+            if term.stem in tokens:
                 retval = []
                 for doc_id, val in compound_index.value_for_field(
                         patentfields.IPC_SECTION):
