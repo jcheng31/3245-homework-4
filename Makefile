@@ -34,11 +34,11 @@ mark_fast:
 	python src/search.py -d run/dictionary.txt -p run/postings.txt \
 		-q benchmark/q1.xml -o run/br1.txt
 	python src/search.py -d run/dictionary.txt -p run/postings.txt \
-		-q benchmark/q1.xml -o run/br2.txt
+		-q benchmark/q2.xml -o run/br2.txt
 	python src/search.py -d run/dictionary.txt -p run/postings.txt \
-		-q benchmark/q1.xml -o run/br3.txt
+		-q benchmark/q3.xml -o run/br3.txt
 	python src/search.py -d run/dictionary.txt -p run/postings.txt \
-		-q benchmark/q1.xml -o run/br4.txt
+		-q benchmark/q4.xml -o run/br4.txt
 	echo Query 1 > run/benchmark.txt
 	benchmark/eval.pl run/br1.txt benchmark/q1-qrels.txt >> run/benchmark.txt
 	echo Query 2 >> run/benchmark.txt
@@ -55,11 +55,11 @@ mark:
 	time python src/search.py -d run/dictionary.txt -p run/postings.txt \
 		-q benchmark/q1.xml -o run/br1.txt
 	time python src/search.py -d run/dictionary.txt -p run/postings.txt \
-		-q benchmark/q1.xml -o run/br2.txt
+		-q benchmark/q2.xml -o run/br2.txt
 	time python src/search.py -d run/dictionary.txt -p run/postings.txt \
-		-q benchmark/q1.xml -o run/br3.txt
+		-q benchmark/q3.xml -o run/br3.txt
 	time python src/search.py -d run/dictionary.txt -p run/postings.txt \
-		-q benchmark/q1.xml -o run/br4.txt
+		-q benchmark/q4.xml -o run/br4.txt
 	echo Query 1 > run/benchmark.txt
 	benchmark/eval.pl run/br1.txt benchmark/q1-qrels.txt >> run/benchmark.txt
 	echo Query 2 >> run/benchmark.txt
