@@ -48,9 +48,9 @@ class VSMBase(object):
             score = dot_product(query_vector, unit_vector(doc_vector))
             shared_obj.set_feature_score(self.NAME, doc_id, score)
 
-    def __get_stem_unstemmed_pairs(self, index, search):
-        tokens = search.get_tokens_for(self.INDEX)
-        if self.INDEX == patentfields.TITLE:
+    def get_stem_unstemmed_pairs(self, index, search):
+        tokens = search.get_tokens_for(index)
+        if index == patentfields.TITLE:
             unstemmed = search.query_title
         else:
             unstemmed = search.query_description
@@ -67,7 +67,7 @@ class VSMSingleField(VSMBase):
         return compound_index.inverse_document_frequency(self.INDEX, term)
 
     def query_tokens(self, search):
-       return self.__get_stem_unstemmed_pairs(self.INDEX, search)
+        return self.get_stem_unstemmed_pairs(self.INDEX, search)
 
     def matches(self, term, compound_index):
         return compound_index.postings_list(self.INDEX, term.stem)
@@ -126,7 +126,7 @@ class VSMMultipleFields(VSMBase):
     def query_tokens(self, search):
         tokens = []
         for idx in self.ZONES:
-            tokens.extend(self.__get_stem_unstemmed_pairs(idx, search))
+            tokens.extend(self.get_stem_unstemmed_pairs(idx, search))
         return tokens
 
     def matches(self, term, compound_index):
@@ -172,6 +172,6 @@ class VSMTitleMinusStopwordsPlusExpansion(VSMSingleFieldMinusStopwordsPlusExpans
     INDEX = patentfields.TITLE
 
 
-class VSMAbstractMinusStopwordsPlusExpansion(VSMSingleFieldMinusStopwordsPlusExpansion)
+class VSMAbstractMinusStopwordsPlusExpansion(VSMSingleFieldMinusStopwordsPlusExpansion):
     NAME = 'VSM_Abstract_Minus_Stopwords_Plus_Expansion'
     INDEX = patentfields.ABSTRACT
