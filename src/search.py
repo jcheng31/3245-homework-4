@@ -109,10 +109,9 @@ class Search(object):
         assert len(weights) == len(self.features_weights)
         self.features_weights = weights
 
-    @cache.naive_class_method_cache
     def get_tokens_for(self, index, unstemmed=False):
         raw_text = self.__text.get(index)
-        if not unstemmed:
+        if unstemmed:
             words = raw_text.split()
             stripped = [x.strip(string.punctuation) for x in words]
             return stripped
