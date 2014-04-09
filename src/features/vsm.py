@@ -1,9 +1,11 @@
 import collections
 import patentfields
 import utils
+import tokenizer
 
 from helpers import cache
 from vsmutils import *
+from thesaurus import Thesaurus
 
 
 class VSMBase(object):
@@ -151,3 +153,25 @@ class VSMTitleAndAbstract(VSMMultipleFields):
 class VSMTitleAndAbstractMinusStopwords(VSMMultipleFieldsMinusStopwords):
     NAME = 'VSM_Title_and_Abstract_Minus_Stopwords'
     ZONES = [patentfields.TITLE, patentfields.ABSTRACT]
+
+
+class VSMSingleFieldMinusStopwordsPlusExpansion(VSMSingleFieldMinusStopwords):
+    def matches(self, term, compound_index):
+        term_postings = set(compound_index.postings_list(self.INDEX, term.stem))
+        thesaurus = Thesaurus()
+        synonyms = thesaurus[term]
+        for synonym in synonyms:
+            postings = compound_index.postings_list(self.INDEX, tokenizer.free_text(synonym))
+            term_postings = term_postings.union(postings)
+
+        return sorted(term_postings)
+
+
+class VSMTitleMinusStopwordsPlusExpansion(VSMSingleFieldMinusStopwordsPlusExpansion):
+    NAME = 'VSM_Title_Minus_Stopwords_Plus_Expansion'
+    INDEX = patentfields.TITLE
+
+
+class VSMAbstractMinusStopwordsPlusExpansion(VSMSingleFieldMinusStopwordsPlusExpansion)
+    NAME = 'VSM_Abstract_Minus_Stopwords_Plus_Expansion'
+    INDEX = patentfields.ABSTRACT
