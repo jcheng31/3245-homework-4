@@ -38,7 +38,7 @@ class VSMBase(object):
         results = collections.defaultdict(dict)
         for term in query_tokens:
             for doc_id, term_frequency in self.matches(term, compound_index):
-                results[doc_id][term.stemmed] = term_frequency
+                results[doc_id][term.stem] = term_frequency
 
         # Calculate the document score.
         for doc_id, tfs in results.iteritems():
@@ -65,7 +65,7 @@ class VSMSingleField(VSMBase):
         return map(Token, tokens, unstemmed)
 
     def matches(self, term, compound_index):
-        return compound_index.postings_list(self.INDEX, term)
+        return compound_index.postings_list(self.INDEX, term.stem)
 
 
 class VSMSingleFieldMinusStopwords(VSMSingleField):
