@@ -24,7 +24,8 @@ class VSMBase(object):
 
         query_tokens = self.query_tokens(search)
         query_tf = collections.Counter(query_tokens)
-        query_terms_sorted = sorted(set(query_tokens))
+        query_stems = map(lambda x: return x.stem, set(query_tokens))
+        query_terms_sorted = sorted(query_stems)
 
         # NOTE(michael): Do the idf weighting on the query vector so we only do
         # it once. (similar to doing this on the tf values of individual
@@ -35,15 +36,25 @@ class VSMBase(object):
 
         # Get the tfs of the docs for each of the query terms.
         results = collections.defaultdict(dict)
-        for term in query_terms_sorted:
+        for term in query_tokens:
             for doc_id, term_frequency in self.matches(term, compound_index):
-                results[doc_id][term] = term_frequency
+                results[doc_id][term.stem] = term_frequency
 
         # Calculate the document score.
         for doc_id, tfs in results.iteritems():
             doc_vector = [tfs.get(term, 0) for term in query_terms_sorted]
             score = dot_product(query_vector, unit_vector(doc_vector))
             shared_obj.set_feature_score(self.NAME, doc_id, score)
+
+    def __get_stem_unstemmed_pairs(self, index, search):
+        tokens = search.get_tokens_for(self.INDEX)
+        if self.INDEX == patentfields.TITLE:
+            unstemmed = search.query_title
+        else:
+            unstemmed = search.query_description
+
+        Token = collections.namedtuple('Token', 'stem unstemmed')
+        return map(Token, tokens, unstemmed)
 
 
 class VSMSingleField(VSMBase):
@@ -54,10 +65,10 @@ class VSMSingleField(VSMBase):
         return compound_index.inverse_document_frequency(self.INDEX, term)
 
     def query_tokens(self, search):
-        return search.get_tokens_for(self.INDEX)
+       return self.__get_stem_unstemmed_pairs(self.INDEX, search)
 
     def matches(self, term, compound_index):
-        return compound_index.postings_list(self.INDEX, term)
+        return compound_index.postings_list(self.INDEX, term.stem)
 
 
 class VSMSingleFieldMinusStopwords(VSMSingleField):
@@ -113,7 +124,7 @@ class VSMMultipleFields(VSMBase):
     def query_tokens(self, search):
         tokens = []
         for idx in self.ZONES:
-            tokens.extend(search.get_tokens_for(idx))
+            tokens.extend(self.__get_stem_unstemmed_pairs(idx, search))
         return tokens
 
     def matches(self, term, compound_index):
