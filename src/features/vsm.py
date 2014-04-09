@@ -155,7 +155,7 @@ class VSMSingleFieldMinusStopwordsPlusExpansion(VSMSingleFieldMinusStopwords):
     def matches(self, term, compound_index):
         term_postings = set(compound_index.postings_list(self.INDEX, term.stem))
         thesaurus = Thesaurus()
-        synonyms = thesaurus[term]
+        synonyms = thesaurus[term.unstemmed]
         for synonym in synonyms:
             postings = compound_index.postings_list(self.INDEX, tokenizer(synonym))
             term_postings = term_postings.union(postings)
