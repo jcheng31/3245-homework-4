@@ -46,6 +46,16 @@ class VSMBase(object):
             score = dot_product(query_vector, unit_vector(doc_vector))
             shared_obj.set_feature_score(self.NAME, doc_id, score)
 
+    def __get_stem_unstemmed_pairs(self, index, search):
+        tokens = search.get_tokens_for(self.INDEX)
+        if self.INDEX == patentfields.TITLE:
+            unstemmed = search.query_title
+        else:
+            unstemmed = search.query_description
+
+        Token = collections.namedtuple('Token', 'stem unstemmed')
+        return map(Token, tokens, unstemmed)
+
 
 class VSMSingleField(VSMBase):
     """VSM feature using a single index."""
@@ -55,14 +65,7 @@ class VSMSingleField(VSMBase):
         return compound_index.inverse_document_frequency(self.INDEX, term)
 
     def query_tokens(self, search):
-        tokens = search.get_tokens_for(self.INDEX)
-        if self.INDEX == patentfields.TITLE:
-            unstemmed = search.query_title
-        else:
-            unstemmed = search.query_description
-
-        Token = collections.namedtuple('Token', 'stem unstemmed')
-        return map(Token, tokens, unstemmed)
+       return self.__get_stem_unstemmed_pairs(self.INDEX, search)
 
     def matches(self, term, compound_index):
         return compound_index.postings_list(self.INDEX, term.stem)
