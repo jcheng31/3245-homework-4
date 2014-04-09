@@ -53,6 +53,9 @@ class Search(object):
         (vsm.VSMAbstractMinusStopwords(),               4),
         (vsm.VSMTitleAndAbstractMinusStopwords(),       2),
 
+        (vsm.VSMTitleMinusStopwordsPlusExpansion(),     1),
+        (vsm.VSMAbstractMinusStopwordsPlusExpansion(),  1),
+
         (ipc.IPCSectionLabelsTitle(),                   1),
         (ipc.IPCSectionLabelsAbstract(),                1),
 
