@@ -23,11 +23,10 @@ class VSMBase(object):
 
     def __call__(self, search, shared_obj):
         compound_index = search.compound_index
-
         query_tokens = self.query_tokens(search)
-        query_tf = collections.Counter(query_tokens)
-        query_stems = map(lambda x: x.stem, set(query_tokens))
-        query_terms_sorted = sorted(query_stems)
+        query_stems = [x.stem for x in query_tokens]
+        query_tf = collections.Counter(query_stems)
+        query_terms_sorted = sorted(set(query_stems))
 
         # NOTE(michael): Do the idf weighting on the query vector so we only do
         # it once. (similar to doing this on the tf values of individual
