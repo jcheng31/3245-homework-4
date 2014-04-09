@@ -26,48 +26,109 @@ def extract_nouns(words):
     return list(nouns)
 
 
-ENDPOINT = 'http://watson.kmi.open.ac.uk/API/term/synonyms?term={term}'
-HEADERS = {
-    'Accept': 'application/json'
-}
-ARRARR = u'Term-array-array'
-ARR = u'Term-array'
+# class WatsonThesaurus(object):
+#     ENDPOINT = 'http://watson.kmi.open.ac.uk/API/term/synonyms?term={term}'
+#     HEADERS = {
+#         'Accept': 'application/json'
+#     }
+#     ARRARR = u'Term-array-array'
+#     ARR = u'Term-array'
+
+#     @staticmethod
+#     def build_thesaurus(words, outfile):
+#         thesaurus = {}
+#         print 'Words: {}'.format(len(words))
+#         count = 0
+#         for w in words:
+#             try:
+#                 count += 1
+#                 if count % 10 == 0:
+#                     print 'Processed: {} of {}'.format(count, len(words))
+#                 url = WatsonThesaurus.ENDPOINT.format(term=w)
+#                 response = requests.get(url, headers=WatsonThesaurus.HEADERS)
+#                 json_obj = response.json()
+
+#                 # Parse API response.
+#                 trr = json_obj[WatsonThesaurus.ARRARR]
+#                 if type(trr) is not dict:
+#                     # Word not found in thesaurus API.
+#                     continue
+#                 trr_trr = trr[WatsonThesaurus.ARR]
+#                 if type(trr_trr) is not dict:
+#                     # wat...
+#                     continue
+#                 synonyms = trr_trr[u'Term']
+#                 if type(synonyms) is not list:
+#                     # No synonyms found.
+#                     synonyms = [synonyms]
+#             except Exception:
+#                 print 'Exception in: ', w
+
+#             thesaurus[w] = synonyms
+#         print 'Writing file...'
+#         with open(outfile, 'w') as f:
+#             json.dump(thesaurus, f)
+#         print 'Done!'
 
 
-def build_thesaurus(words, outfile):
-    thesaurus = {}
-    print 'Words: {}'.format(len(words))
-    count = 0
-    for w in words:
-        try:
-            count += 1
-            if count % 10 == 0:
-                print 'Processed: {} of {}'.format(count, len(words))
-            url = ENDPOINT.format(term=w)
-            response = requests.get(url, headers=HEADERS)
-            json_obj = response.json()
+class AltervistaThesaurus(object):
+    ENDPOINT = 'http://thesaurus.altervista.org/thesaurus/v1?word={term}&' + \
+               'language=en_US&key={key}&output=json'
+    API_KEY = 'PAkqMalR6aTH3rTcndnT'
 
-            # Parse API response.
-            trr = json_obj[ARRARR]
-            if type(trr) is not dict:
-                # Word not found in thesaurus API.
+    @staticmethod
+    def build_thesaurus(words, outfile, limit=None):
+        thesaurus = {}
+        print 'Words: {}'.format(len(words))
+        count = 0
+        for w in words:
+            try:
+                count += 1
+                if count % 10 == 0:
+                    print 'Processed: {} of {}'.format(count, len(words))
+                url = AltervistaThesaurus.ENDPOINT.format(
+                    term=w, key=AltervistaThesaurus.API_KEY)
+                response = requests.get(url)
+                json_obj = response.json()
+
+                synonyms = AltervistaThesaurus.__parse_response(json_obj)
+            except Exception:
+                synonyms = []
+                print 'Exception in: ', w
+
+            thesaurus[w] = synonyms
+
+            if limit and count >= limit:
+                break
+        print 'Writing file...'
+        with open(outfile, 'w') as f:
+            json.dump(thesaurus, f)
+        print 'Done!'
+
+    @staticmethod
+    def __parse_response(json_obj):
+        if 'error' in json_obj or 'response' not in json_obj:
+            return []
+        
+        all_synonyms = set()
+        forms = json_obj['response']
+        for form in forms:
+            content = form['list']
+            pos = content['category']
+            if pos != '(noun)':
                 continue
-            trr_trr = trr[ARR]
-            if type(trr_trr) is not dict:
-                # wat...
-                continue
-            synonyms = trr_trr[u'Term']
-            if type(synonyms) is not list:
-                # No synonyms found.
-                synonyms = [synonyms]
-        except Exception:
-            print w
 
-        thesaurus[w] = synonyms
-    print 'Writing file...'
-    with open(outfile, 'w') as f:
-        json.dump(thesaurus, f)
-    print 'Done!'
+            synonyms_field = content['synonyms']
+            synonyms = synonyms_field.split('|')
+            for compound_word in synonyms:
+                if not compound_word.isalpha():
+                    continue
+
+                words = compound_word.split(' ')
+                for w in words:
+                    all_synonyms.add(w.strip())
+
+        return list(all_synonyms)
 
 
 class DirectoryProcessor(object):
@@ -97,7 +158,7 @@ class DirectoryProcessor(object):
             words += self.__process_patent(doc_id, patent_info)
         unique_words = list(set(words))
         nouns = extract_nouns(unique_words)
-        build_thesaurus(nouns, self.__out_file)
+        AltervistaThesaurus.build_thesaurus(nouns, self.__out_file)
 
     def __process_patent(self, doc_id, info):
         words = []
@@ -106,7 +167,6 @@ class DirectoryProcessor(object):
             if text:
                 words += tokenize(text)
         return words
-
 
 
 def main(args):
