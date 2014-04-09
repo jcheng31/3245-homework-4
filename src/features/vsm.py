@@ -49,10 +49,7 @@ class VSMBase(object):
 
     def get_stem_unstemmed_pairs(self, index, search):
         tokens = search.get_tokens_for(index)
-        if index == patentfields.TITLE:
-            unstemmed = search.query_title
-        else:
-            unstemmed = search.query_description
+        unstemmed = search.get_tokens_for(index, unstemmed=True)
 
         Token = collections.namedtuple('Token', 'stem unstemmed')
         return map(Token, tokens, unstemmed)
