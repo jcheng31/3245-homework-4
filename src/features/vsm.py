@@ -24,7 +24,8 @@ class VSMBase(object):
 
         query_tokens = self.query_tokens(search)
         query_tf = collections.Counter(query_tokens)
-        query_terms_sorted = sorted(set(query_tokens))
+        query_stems = map(lambda x: return x.stem, set(query_tokens))
+        query_terms_sorted = sorted(query_stems)
 
         # NOTE(michael): Do the idf weighting on the query vector so we only do
         # it once. (similar to doing this on the tf values of individual
@@ -35,9 +36,9 @@ class VSMBase(object):
 
         # Get the tfs of the docs for each of the query terms.
         results = collections.defaultdict(dict)
-        for term in query_terms_sorted:
+        for term in query_tokens:
             for doc_id, term_frequency in self.matches(term, compound_index):
-                results[doc_id][term] = term_frequency
+                results[doc_id][term.stemmed] = term_frequency
 
         # Calculate the document score.
         for doc_id, tfs in results.iteritems():
