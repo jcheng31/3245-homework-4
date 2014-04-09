@@ -157,7 +157,8 @@ class VSMSingleFieldMinusStopwordsPlusExpansion(VSMSingleFieldMinusStopwords):
         thesaurus = Thesaurus()
         synonyms = thesaurus[term.unstemmed]
         for synonym in synonyms:
-            postings = compound_index.postings_list(self.INDEX, tokenizer(synonym))
+            stemmed_synonym = tokenizer(synonym)[0]
+            postings = compound_index.postings_list(self.INDEX, stemmed_synonym)
             term_postings = term_postings.union(postings)
 
         return sorted(term_postings)
