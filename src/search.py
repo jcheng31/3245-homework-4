@@ -8,7 +8,7 @@ import utils
 
 from features import vsm, fields, ipc, cluster, relation
 from helpers import cache
-from parser import free_text as tokenizer
+from tokenizer import free_text as tokenizer
 
 
 class Search(object):
