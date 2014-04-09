@@ -117,7 +117,7 @@ class Search(object):
             return stripped
 
         tokens = tokenizer(raw_text)
-        return tokens
+        return [x for x in tokens if x not in string.punctuation]
 
     def execute(self):
         """Executes the search by running all features."""
