@@ -130,7 +130,7 @@ class VSMMultipleFields(VSMBase):
     def matches(self, term, compound_index):
         results = collections.defaultdict(lambda: 0)
         for idx in self.ZONES:
-            for doc_id, term_freq in compound_index.postings_list(idx, term):
+            for doc_id, term_freq in compound_index.postings_list(idx, term.stem):
                 results[doc_id] += term_freq
         return results.iteritems()
 
