@@ -55,7 +55,7 @@ sub Version {
 }
 
 sub License {
-  print STDERR "# Copyright 2006 \251 by Min-Yen Kan\n";
+  print STDOUT "# Copyright 2006 \251 by Min-Yen Kan\n";
 }
 
 ###
@@ -63,8 +63,8 @@ sub License {
 ###
 
 my $cmdLine = $0 . " " . join (" ", @ARGV);
-if ($#ARGV == -1) {                 # invoked with no arguments, possible error in execution? 
-  print STDERR "# $progname info\t\tNo arguments detected, waiting for input on command line.\n";  
+if ($#ARGV == -1) {                 # invoked with no arguments, possible error in execution?
+  print STDERR "# $progname info\t\tNo arguments detected, waiting for input on command line.\n";
   print STDERR "# $progname info\t\tIf you need help, stop this program and reinvoke with \"-h\".\n";
 }
 
@@ -143,7 +143,7 @@ for (my $i = 0; $i <= $#sys; $i++) {
 
   push (@precision, ($count-$unknown == 0) ? 0 : $correct/($count-$unknown));
   push (@recall, ($count-$unknown == 0) ? 0 : $correct/$totalPositive);
-  $f = (((($beta * $beta * $precision[$#precision])+$recall[$#recall]) == 0) ? 0 : 
+  $f = (((($beta * $beta * $precision[$#precision])+$recall[$#recall]) == 0) ? 0 :
     (((($beta*$beta)+1)*$precision[$#precision]*$recall[$#recall])/((($beta * $beta) * $precision[$#precision])+$recall[$#recall]))
     );
   push (@f, $f);
