@@ -90,8 +90,8 @@ class Search(object):
         self.__query = utils.parse_query_xml(query_xml)
 
         self.__text = {
-            patentfield.TITLE: self.query_title,
-            patentfield.ABSTRACT: self.query_description
+            patentfields.TITLE: self.query_title,
+            patentfields.ABSTRACT: self.query_description
         }
 
         self.features, self.features_weights = zip(*self.FEATURES)
