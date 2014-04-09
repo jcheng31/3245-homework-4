@@ -124,7 +124,7 @@ class VSMMultipleFields(VSMBase):
     def query_tokens(self, search):
         tokens = []
         for idx in self.ZONES:
-            tokens.extend(search.get_tokens_for(idx))
+            tokens.extend(self.__get_stem_unstemmed_pairs(idx, search))
         return tokens
 
     def matches(self, term, compound_index):
