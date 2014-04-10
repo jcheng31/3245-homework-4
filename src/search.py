@@ -229,8 +229,16 @@ class Search(object):
         return results
 
     query_title = property(lambda self: self.__query['title'])
-    query_description = property(lambda self: self.__query['description'])
     compound_index = property(lambda self: self.__compound_index)
+
+    @property
+    def query_description(self):
+        # Remove description prefix
+        description_prefix = 'Relevant documents will describe '
+        raw = self.__query['description']
+        if raw.startswith(description_prefix):
+            raw = raw[len(description_prefix):]
+        return raw
 
 
 class SharedSearchObject(object):
