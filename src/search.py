@@ -85,8 +85,8 @@ class Search(object):
 
         (fields.CitationCount(),                        1),
 
-        (relation.Citations(),                          0),
-        (relation.FamilyMembers(),                      0),
+        # (relation.Citations(),                          0),
+        # (relation.FamilyMembers(),                      0),
     ]
 
     def __init__(self, query_xml, compound_index):
@@ -290,8 +290,6 @@ def main(args):
         -0.16678862,
         0.32148819,
         2.73311628,
-        0,
-        0,
     ])
 
     results = s.results()
