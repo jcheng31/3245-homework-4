@@ -21,7 +21,7 @@ search5:
 learn:
 	python src/learn.py -d run/dictionary.txt
 
-matric_no := a0082877m-a0080860h-a0092104u
+matric_no := A0092104U-A0082877M-A0080860H
 
 submission:
 	rm -rf $(matric_no) $(matric_no).zip

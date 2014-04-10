@@ -11,14 +11,22 @@ def xml_file_to_dict(file_path):
     in XML form, returns a dictionary representing
     the patent within that file.
     """
+    # We use ElementTree to load the XML file
+    # and handle actual parsing.
     xml_tree = ElementTree.parse(file_path)
     root = xml_tree.getroot()
 
+    # Pass off to our helper to do actual conversion into
+    # a dictionary.
     dict_representation = root_node_to_dictionary(root)
     return dict_representation
 
 
 def root_node_to_dictionary(root):
+    """Given the root node of an ElementTree, returns
+    a dictionary where keys are the 'name' attributes
+    of each XML node contained within, and values are
+    the text contained within that node."""
     dict_representation = {}
 
     for element in root:
@@ -38,7 +46,8 @@ def root_node_to_dictionary(root):
 
 
 def parse_query_xml(xml):
-    """Returns a dictionary representation of the query xml."""
+    """Given a string of XML representing a query, returns
+    a dictionary representing the query."""
     root = ElementTree.fromstring(xml)
     retval = {}
     for child in root:
