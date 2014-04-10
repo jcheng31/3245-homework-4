@@ -113,6 +113,12 @@ class Search(object):
         self.features_weights = weights
 
     def get_tokens_for(self, index, unstemmed=False):
+        """Given an index (title or abstract), returns a list of tokens
+        from the words contained in that index. 
+
+        By default, this will return case-folded and stemmed tokens. If
+        the unstemmed parameter is set to True, the original words will be
+        returned instead."""
         raw_text = self.__text.get(index)
         if unstemmed:
             words = raw_text.split()
