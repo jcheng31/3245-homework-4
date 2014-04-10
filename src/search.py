@@ -200,9 +200,13 @@ class SharedSearchObject(object):
         self.doc_ids_to_scores = {}
 
     def has_score(self, doc_id):
+        """Given a document ID, returns whether or not
+        that document already has some score recorded."""
         return self.doc_ids_to_scores.get(doc_id)
 
     def set_feature_score(self, feature, doc_id, score):
+        """Given a feature name, document ID, and a score,
+        updates the score of that document ID for the feature."""
         if not self.doc_ids_to_scores.get(doc_id):
             self.doc_ids_to_scores[doc_id] = {}
         self.doc_ids_to_scores[doc_id][feature] = score
@@ -214,6 +218,7 @@ def main(args):
     query_file = os.path.abspath(args.query)
     output_file = os.path.abspath(args.output)
 
+    # Open the dictionary.
     # NOTE(michael): Do these things outside the search class to allow
     # dependency injection at runtime/testing.
     with open(dictionary_file, 'r') as f:
@@ -221,9 +226,11 @@ def main(args):
 
     compound_index = compoundindex.CompoundIndex(json_obj)
 
+    # Load the query file.
     with open(query_file, 'r') as f:
         query_xml = f.read()
 
+    # Execute the query.
     s = Search(query_xml, compound_index)
     results = s.execute().results()
 
