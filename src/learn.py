@@ -55,13 +55,7 @@ def learn(compound_index):
         s = q['search']
 
         if coeff is not None:
-            min_score = coeff[-1]
-            s.override_proportion(min_score)
-            # coeff = coeff[:-1]
-            # weights = coeff[:len(coeff)/2]
-            # thresholds = coeff[len(coeff)/2:]
-            # s.override_features_weights(weights)
-            # s.override_features_thresholds(thresholds)
+            s.override_features_weights(coeff)
 
         results = s.results()
         correct = 0
@@ -74,6 +68,8 @@ def learn(compound_index):
         recall = []
         f = []
 
+        incorrect = []
+
         for r in results:
             count += 1
             if q['results'].get(r) == 1:
@@ -81,6 +77,9 @@ def learn(compound_index):
             elif r not in q['results']:
                 unknown += 1
                 continue
+            else:
+                incorrect.append(r)
+
 
             total_known = count - unknown
             if total_known == 0:
@@ -116,9 +115,12 @@ def learn(compound_index):
         for idx in xrange(4):
             val = f(weights, dataset=idx)
             total += (1 - val)
+
+        if total < 2:
+            print weights, total
         return total
 
-    starting_coeffs = [1]
+    starting_coeffs = [1] * len(search.Search.FEATURES)
 
     print '# Root mean squared with current weights'
     print 'Dataset 0:', f(None, 0)
@@ -127,12 +129,11 @@ def learn(compound_index):
     print 'Dataset 3:', f(None, 3)
     print train_f(None)
 
-
-    # print '# Root mean squared with new weights (fmin_powell)'
-    # result = scipy.optimize.fmin_powell(f, list(starting_coeffs))
-    # print result, train_f(result)
-    # for idx in xrange(4):
-    #     print idx, f(result, dataset=idx)
+    print '# Root mean squared with new weights (fmin_powell)'
+    result = scipy.optimize.fmin_powell(train_f, list(starting_coeffs))
+    print result, train_f(result)
+    for idx in xrange(4):
+        print idx, f(result, dataset=idx)
 
     print '# Root mean squared with new weights (downhill simplex)'
     result = scipy.optimize.fmin(train_f, starting_coeffs)
