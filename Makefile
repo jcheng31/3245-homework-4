@@ -47,7 +47,7 @@ mark_fast:
 	benchmark/eval.pl run/br3.txt benchmark/q3-qrels.txt >> run/benchmark.txt
 	echo Query 4 >> run/benchmark.txt
 	benchmark/eval.pl run/br4.txt benchmark/q4-qrels.txt >> run/benchmark.txt
-	cat run/benchmark.txt
+	cat run/benchmark.txt | grep "Average F"
 
 mark:
 	time python src/index.py -i patsnap-corpus -d run/dictionary.txt \
@@ -68,4 +68,8 @@ mark:
 	benchmark/eval.pl run/br3.txt benchmark/q3-qrels.txt >> run/benchmark.txt
 	echo Query 4 >> run/benchmark.txt
 	benchmark/eval.pl run/br4.txt benchmark/q4-qrels.txt >> run/benchmark.txt
-	cat run/benchmark.txt
+	cat run/benchmark.txt | grep "Average F"
+
+thesaurus:
+	python src/thesaurus_builder.py -i patsnap-corpus/ -o run/thesaurus.json
+
