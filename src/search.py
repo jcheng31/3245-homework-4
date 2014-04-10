@@ -117,7 +117,7 @@ class Search(object):
         from the words contained in that index. 
 
         By default, this will return case-folded and stemmed tokens. If
-        the unstemmed parameter is set to True, the original words will be
+        the unstemmed argument is set to True, the original words will be
         returned instead."""
         raw_text = self.__text.get(index)
         if unstemmed:
@@ -143,9 +143,9 @@ class Search(object):
         return self
 
     def results(self, verbose=False):
-        """Returns a list of documents that match to search query.
+        """Returns a list of documents that match the search query, in order
+        of relevance.
 
-        Documents are returned in order of relevance. If the verbose argument
         If the verbose argument is set, returns a dictionary keyed by document
         name and with value:
 
