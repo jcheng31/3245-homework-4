@@ -48,16 +48,16 @@ class Search(object):
 
     # Declaration of features and their weights.
     FEATURES = [
-        (vsm.VSMTitle(),                                -8),
-        (vsm.VSMAbstract(),                             -4),
-        (vsm.VSMTitleAndAbstract(),                     -2),
+        (vsm.VSMTitle(),                                0),
+        (vsm.VSMAbstract(),                             0),
+        (vsm.VSMTitleAndAbstract(),                     0),
 
-        (vsm.VSMTitleMinusStopwords(),                  7),
-        (vsm.VSMAbstractMinusStopwords(),               3),
-        (vsm.VSMTitleAndAbstractMinusStopwords(),       2),
+        (vsm.VSMTitleMinusStopwords(),                  10),
+        (vsm.VSMAbstractMinusStopwords(),               8),
+        (vsm.VSMTitleAndAbstractMinusStopwords(),       6),
 
-        (vsm.VSMTitleMinusStopwordsPlusExpansion(),     2),
-        (vsm.VSMAbstractMinusStopwordsPlusExpansion(),  2),
+        (vsm.VSMTitleMinusStopwordsPlusExpansion(),     5),
+        (vsm.VSMAbstractMinusStopwordsPlusExpansion(),  5),
 
         (ipc.IPCSectionLabelsTitle(),                   1),
         (ipc.IPCSectionLabelsAbstract(),                1),
@@ -79,7 +79,7 @@ class Search(object):
         (cluster.cluster_feature_generator(
             patentfields.ALL_UPC)(),                    1),
         (cluster.cluster_feature_generator(
-            patentfields.UPC_PRIMARY)(),                -1),
+            patentfields.UPC_PRIMARY)(),                1),
         (cluster.cluster_feature_generator(
             patentfields.UPC_CLASS)(),                  1),
 
@@ -268,7 +268,33 @@ def main(args):
 
     # Execute the query.
     s = Search(query_xml, compound_index)
-    results = s.execute().results()
+    s.execute()
+
+    # NOTE(michael): Lazy to format the weights nicely above...
+    s.override_features_weights([
+        -4.76077042,
+        -10.78278743,
+        7.68774728,
+        0.94963462,
+        -8.45635778,
+        0.82181193,
+        1.01882405,
+        1.00527037,
+        3.58792896,
+        6.76550242,
+        6.13546418,
+        7.76432611,
+        3.1524329,
+        0.9973575,
+        1.,
+        3.58792896,
+        1.01279276,
+        -0.16678862,
+        0.32148819,
+        2.73311628,
+    ])
+
+    results = s.results()
 
     # Write results to file.
     with open(output_file, 'w+') as output:
