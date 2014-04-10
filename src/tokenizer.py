@@ -1,8 +1,25 @@
-from nltk import word_tokenize, sent_tokenize
-from nltk.stem.porter import PorterStemmer
+from nltk import pos_tag, word_tokenize, sent_tokenize
+from nltk.stem.snowball import SnowballStemmer
+# from nltk.stem.porter import PorterStemmer
 
 
-__stemmer = PorterStemmer()
+__stemmer = SnowballStemmer('english')
+# __stemmer = PorterStemmer()
+
+
+# def stem_except_nouns_adjectives(words):
+#     pos_words = pos_tag(words)
+#     result = []
+#     for token, pos in pos_words:
+#         if pos in ['NN', 'JJ']:
+#             result += token
+#         else:
+#             result += __stemmer.stem(token)
+#     return result
+
+
+def stem_all(words):
+    return [__stemmer.stem(w) for w in words]
 
 
 # This is the tokeniser from homework 3.
@@ -16,8 +33,11 @@ def free_text(text):
         for sent in sentences:
             sent = sent.lower()
             words += word_tokenize(sent.strip())
-        return [__stemmer.stem(w) for w in words]
+        words = stem_all(words)
+        return words
     except TypeError:
-        print 'TypeError while processing text: {}\nNo tokens were returned' \
+        print u'TypeError while processing text: {}\nNo tokens were returned' \
               .format(text)
         return []
+
+
