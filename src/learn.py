@@ -80,7 +80,6 @@ def learn(compound_index):
             else:
                 incorrect.append(r)
 
-
             total_known = count - unknown
             if total_known == 0:
                 p = 0
@@ -117,8 +116,8 @@ def learn(compound_index):
             val = f(weights, dataset=idx)
             total += (1 - val)
 
-        if train_f.counter % 100 == 0 and total < 1.86:
-            print weights, total
+        # if train_f.counter % 100 == 0 and total < 1.86:
+        #     print weights, total
 
         return total
     train_f.counter = 0
