@@ -10,6 +10,8 @@ class Thesaurus(object):
             self.__backing = json.load(f)
 
     def __getitem__(self, index):
+        if not index:
+            return []
         if type(index) is not str:
             raise TypeError('Key must be type(str)')
         return self.__backing.get(index, [])
