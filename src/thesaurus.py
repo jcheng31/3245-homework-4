@@ -1,7 +1,7 @@
 import json
 import os
 
-THESAURUS_PATH = '../run/thesaurus.json'
+THESAURUS_PATH = 'thesaurus.json'
 
 class Thesaurus(object):
     def __init__(self, thesaurus_path=THESAURUS_PATH):
