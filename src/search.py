@@ -59,8 +59,8 @@ class Search(object):
         (vsm.VSMTitleMinusStopwordsPlusExpansion(),     5),
         (vsm.VSMAbstractMinusStopwordsPlusExpansion(),  5),
 
-        (ipc.IPCSectionLabelsTitle(),                   1),
-        (ipc.IPCSectionLabelsAbstract(),                1),
+        # (ipc.IPCSectionLabelsTitle(),                   1),
+        # (ipc.IPCSectionLabelsAbstract(),                1),
 
         # clusters
         (cluster.cluster_feature_generator(
@@ -85,8 +85,8 @@ class Search(object):
 
         (fields.CitationCount(),                        1),
 
-        # (relation.Citations(),                          0),
-        # (relation.FamilyMembers(),                      0),
+        (relation.Citations(),                          0),
+        (relation.FamilyMembers(),                      0),
     ]
 
     def __init__(self, query_xml, compound_index):
@@ -281,8 +281,6 @@ def main(args):
         1.01882405,
         1.00527037,
         3.58792896,
-        6.76550242,
-        6.13546418,
         7.76432611,
         3.1524329,
         0.9973575,
@@ -292,6 +290,8 @@ def main(args):
         -0.16678862,
         0.32148819,
         2.73311628,
+        0,
+        0,
     ])
 
     results = s.results()
