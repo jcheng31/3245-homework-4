@@ -44,7 +44,7 @@ class VSMBase(object):
         # Calculate the document score.
         for doc_id, tfs in results.iteritems():
             doc_vector = [tfs.get(term, 0) for term in query_terms_sorted]
-            score = dot_product(query_vector, unit_vector(doc_vector))
+            score = dot_product(unit_query_vector, unit_vector(doc_vector))
             shared_obj.set_feature_score(self.NAME, doc_id, score)
 
     def get_stem_unstemmed_pairs(self, index, search):
