@@ -93,12 +93,15 @@ class Search(object):
         self.__compound_index = compound_index
         self.__query = utils.parse_query_xml(query_xml)
 
+        # Dictionary containing the raw text for the query's title and description.
         self.__text = {
             patentfields.TITLE: self.query_title,
             patentfields.ABSTRACT: self.query_description
         }
 
         self.min_score = self.MIN_SCORE
+        # Set up lists to represent the feature functions and
+        # their associated weights.
         self.features = []
         self.features_weights = []
         self.features_thresholds = []
@@ -109,6 +112,8 @@ class Search(object):
             self.features_thresholds.append(threshold)
             self.features_vector_key.append(f.NAME)
 
+        # Set up our "global" object to share information
+        # between feature functions.
         self.shared_search_obj = SharedSearchObject()
 
     def override_features_weights(self, weights):
@@ -133,23 +138,35 @@ class Search(object):
         self.features_thresholds = thresholds
 
     def get_tokens_for(self, index, unstemmed=False):
+        """Given an index (title or abstract), returns a list of tokens
+        from the words contained in that index.
+
+        By default, this will return case-folded and stemmed tokens. If
+        the unstemmed argument is set to True, the original words will be
+        returned instead."""
         raw_text = self.__text.get(index)
+
         if unstemmed:
+            # We need to return just the words, without any punctuation.
             words = raw_text.split()
             stripped = [x.strip(string.punctuation) for x in words]
             return stripped
 
         tokens = tokenizer(raw_text)
+
+        # We want to strip out tokens which consist of just
+        # punctuation characters.
         return [x for x in tokens if x not in string.punctuation]
 
     def execute(self):
         """Executes the search by running all features."""
+        # Loop through all our feature functions. Each feature
+        # updates self.shared_search_obj with its score for
+        # each document.
         for feature in self.features:
             try:
                 feature(self, self.shared_search_obj)
             except Exception, e:
-                # NOTE(michael): This is for the competition framework. (When
-                # an error occurs during search, there is no log/entry at all.
                 import traceback
                 tb = traceback.format_exc()
                 print "# Error in feature: %s\n%s" % (feature.NAME, tb)
@@ -157,9 +174,9 @@ class Search(object):
         return self
 
     def results(self, verbose=False):
-        """Returns a list of documents that match to search query.
+        """Returns a list of documents that match the search query, in order
+        of relevance.
 
-        Documents are returned in order of relevance. If the verbose argument
         If the verbose argument is set, returns a dictionary keyed by document
         name and with value:
 
@@ -169,12 +186,17 @@ class Search(object):
         NOTE: This is separated from execute so we can vary weights during the
         learning phase without recomputing the unweighted feature scores.
         """
+
+        # Generate a list of documents, in descending order of relevance,
+        # where the score of each document is above our threshold.
         results = self.calculate_score(
             self.shared_search_obj.doc_ids_to_scores)
         results.sort(reverse=True)  # Highest score first.
         results = [r for r in results if r[0] > self.min_score]
 
         if verbose:
+            # Instead, generate the dictionary described in the docstring
+            # above and return it.
             retval = {}
             for elem in results:
                 doc_name = self.compound_index.document_name_for_guid(
@@ -221,9 +243,13 @@ class SharedSearchObject(object):
         self.doc_ids_to_scores = {}
 
     def has_score(self, doc_id):
+        """Given a document ID, returns whether or not
+        that document already has some score recorded."""
         return self.doc_ids_to_scores.get(doc_id)
 
     def set_feature_score(self, feature, doc_id, score):
+        """Given a feature name, document ID, and a score,
+        updates the score of that document ID for the feature."""
         if not self.doc_ids_to_scores.get(doc_id):
             self.doc_ids_to_scores[doc_id] = {}
         self.doc_ids_to_scores[doc_id][feature] = score
@@ -235,6 +261,7 @@ def main(args):
     query_file = os.path.abspath(args.query)
     output_file = os.path.abspath(args.output)
 
+    # Open the dictionary.
     # NOTE(michael): Do these things outside the search class to allow
     # dependency injection at runtime/testing.
     with open(dictionary_file, 'r') as f:
@@ -242,9 +269,11 @@ def main(args):
 
     compound_index = compoundindex.CompoundIndex(json_obj)
 
+    # Load the query file.
     with open(query_file, 'r') as f:
         query_xml = f.read()
 
+    # Execute the query.
     s = Search(query_xml, compound_index)
     results = s.execute().results()
 
