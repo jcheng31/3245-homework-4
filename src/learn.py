@@ -111,14 +111,17 @@ def learn(compound_index):
         return avg_f
 
     def train_f(weights):
+        train_f.counter += 1
         total = 0
         for idx in xrange(4):
             val = f(weights, dataset=idx)
             total += (1 - val)
 
-        if total < 2:
+        if train_f.counter % 100 == 0 and total < 1.86:
             print weights, total
+
         return total
+    train_f.counter = 0
 
     starting_coeffs = [1] * len(search.Search.FEATURES)
 
