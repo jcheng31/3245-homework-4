@@ -29,6 +29,9 @@ def root_node_to_dictionary(root):
             # Normalise null or empty values to empty string.
             value = ''
 
+        # Normalise to ascii, ignoring unicode.
+        value = value.encode('ascii', 'ignore')
+
         dict_representation[key] = value
 
     return dict_representation
