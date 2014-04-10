@@ -93,13 +93,19 @@ class Search(object):
         self.__compound_index = compound_index
         self.__query = utils.parse_query_xml(query_xml)
 
+        # Dictionary containing the raw text for the query's title and description.
         self.__text = {
             patentfields.TITLE: self.query_title,
             patentfields.ABSTRACT: self.query_description
         }
 
+        # Set up lists to represent the feature functions and
+        # their associated weights.
         self.features, self.features_weights = zip(*self.FEATURES)
         self.features_vector_key = [f.NAME for f in self.features]
+
+        # Set up our "global" object to share information
+        # between feature functions.
         self.shared_search_obj = SharedSearchObject()
 
     def override_features_weights(self, weights):
@@ -120,22 +126,28 @@ class Search(object):
         the unstemmed argument is set to True, the original words will be
         returned instead."""
         raw_text = self.__text.get(index)
+
         if unstemmed:
+            # We need to return just the words, without any punctuation.
             words = raw_text.split()
             stripped = [x.strip(string.punctuation) for x in words]
             return stripped
 
         tokens = tokenizer(raw_text)
+
+        # We want to strip out tokens which consist of just
+        # punctuation characters.
         return [x for x in tokens if x not in string.punctuation]
 
     def execute(self):
         """Executes the search by running all features."""
+        # Loop through all our feature functions. Each feature
+        # updates self.shared_search_obj with its score for
+        # each document.
         for feature in self.features:
             try:
                 feature(self, self.shared_search_obj)
             except Exception, e:
-                # NOTE(michael): This is for the competition framework. (When
-                # an error occurs during search, there is no log/entry at all.
                 import traceback
                 tb = traceback.format_exc()
                 print "# Error in feature: %s\n%s" % (feature.NAME, tb)
@@ -155,12 +167,17 @@ class Search(object):
         NOTE: This is separated from execute so we can vary weights during the
         learning phase without recomputing the unweighted feature scores.
         """
+
+        # Generate a list of documents, in descending order of relevance,
+        # where the score of each document is above our threshold.
         results = self.calculate_score(
             self.shared_search_obj.doc_ids_to_scores)
         results.sort(reverse=True)  # Highest score first.
         results = [r for r in results if r[0] > self.MIN_SCORE]
 
         if verbose:
+            # Instead, generate the dictionary described in the docstring
+            # above and return it.
             retval = {}
             for elem in results:
                 doc_name = self.compound_index.document_name_for_guid(
