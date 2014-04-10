@@ -46,47 +46,47 @@ class Search(object):
     # Arbitrary minimum score of a relevant document.
     MIN_SCORE = 1
 
-    # Declaration of features and their weights and their min-scores.
+    # Declaration of features and their weights.
     FEATURES = [
-        (vsm.VSMTitle(),                                -8,         0),
-        (vsm.VSMAbstract(),                             -4,         0),
-        (vsm.VSMTitleAndAbstract(),                     -2,         0),
+        (vsm.VSMTitle(),                                -8),
+        (vsm.VSMAbstract(),                             -4),
+        (vsm.VSMTitleAndAbstract(),                     -2),
 
-        (vsm.VSMTitleMinusStopwords(),                  8,          1.07),
-        (vsm.VSMAbstractMinusStopwords(),               4,          1),
-        (vsm.VSMTitleAndAbstractMinusStopwords(),       2,          0),
+        (vsm.VSMTitleMinusStopwords(),                  7),
+        (vsm.VSMAbstractMinusStopwords(),               3),
+        (vsm.VSMTitleAndAbstractMinusStopwords(),       2),
 
-        (vsm.VSMTitleMinusStopwordsPlusExpansion(),     2,          1),
-        (vsm.VSMAbstractMinusStopwordsPlusExpansion(),  2,          0),
+        (vsm.VSMTitleMinusStopwordsPlusExpansion(),     2),
+        (vsm.VSMAbstractMinusStopwordsPlusExpansion(),  2),
 
-        (ipc.IPCSectionLabelsTitle(),                   1,          0),
-        (ipc.IPCSectionLabelsAbstract(),                1,          0),
+        (ipc.IPCSectionLabelsTitle(),                   1),
+        (ipc.IPCSectionLabelsAbstract(),                1),
 
         # clusters
         (cluster.cluster_feature_generator(
-            patentfields.IPC_SECTION)(),                1,          0),
+            patentfields.IPC_SECTION)(),                1),
         (cluster.cluster_feature_generator(
-            patentfields.IPC_CLASS)(),                  2,          0),
+            patentfields.IPC_CLASS)(),                  2),
         (cluster.cluster_feature_generator(
-            patentfields.IPC_GROUP)(),                  4,          0),
+            patentfields.IPC_GROUP)(),                  4),
         (cluster.cluster_feature_generator(
-            patentfields.IPC_PRIMARY)(),                6,          0),
+            patentfields.IPC_PRIMARY)(),                6),
         (cluster.cluster_feature_generator(
-            patentfields.IPC_SUBCLASS)(),               8,          0),
+            patentfields.IPC_SUBCLASS)(),               8),
         (cluster.cluster_feature_generator(
-            patentfields.ALL_IPC)(),                    10,          0),
+            patentfields.ALL_IPC)(),                    10),
 
         (cluster.cluster_feature_generator(
-            patentfields.ALL_UPC)(),                    1,          0),
+            patentfields.ALL_UPC)(),                    1),
         (cluster.cluster_feature_generator(
-            patentfields.UPC_PRIMARY)(),                -1,          0),
+            patentfields.UPC_PRIMARY)(),                -1),
         (cluster.cluster_feature_generator(
-            patentfields.UPC_CLASS)(),                  1,          0),
+            patentfields.UPC_CLASS)(),                  1),
 
-        (fields.CitationCount(),                        1,          0),
+        (fields.CitationCount(),                        1),
 
-        (relation.Citations(),                          0,          0),
-        (relation.FamilyMembers(),                      0,          0),
+        # (relation.Citations(),                          0),
+        # (relation.FamilyMembers(),                      0),
     ]
 
     def __init__(self, query_xml, compound_index):
@@ -104,12 +104,10 @@ class Search(object):
         # their associated weights.
         self.features = []
         self.features_weights = []
-        self.features_thresholds = []
         self.features_vector_key = []
-        for f, weight, threshold in self.FEATURES:
+        for f, weight in self.FEATURES:
             self.features.append(f)
             self.features_weights.append(weight)
-            self.features_thresholds.append(threshold)
             self.features_vector_key.append(f.NAME)
 
         # Set up our "global" object to share information
@@ -128,14 +126,6 @@ class Search(object):
 
     def override_min_score(self, min_score):
         self.min_score = min_score
-
-    def override_features_thresholds(self, thresholds):
-        """Overrides specified feature thresholds.
-
-        Used for learning/trainig the coefficients to fit the training data.
-        """
-        assert len(thresholds) == len(self.features_thresholds)
-        self.features_thresholds = thresholds
 
     def get_tokens_for(self, index, unstemmed=False):
         """Given an index (title or abstract), returns a list of tokens
@@ -217,14 +207,9 @@ class Search(object):
             doc_score_vector = [score.get(key, 0) for key in
                                 self.features_vector_key]
 
-            # feature thresholds
-            v = []
-            for idx, score in enumerate(doc_score_vector):
-                if score < self.features_thresholds[idx]:
-                    score = 0
-                v.append(score)
+            doc_score = utils.dot_product(
+                doc_score_vector, self.features_weights)
 
-            doc_score = utils.dot_product(v, self.features_weights)
             results.append((doc_score, doc_score_vector, doc_id))
         return results
 
