@@ -57,8 +57,8 @@ class VSMSingleFieldNounsOnly(VSMSingleField):
         query_tokens = super(VSMSingleFieldNounsOnly,
             self).query_tokens()
 
-        # Run the query tokens through a pos tagger and filter out tokens that
-        # are not nouns.
+        # Run the query tokens through a part of speech tagger and filter out
+        # tokens that are not nouns.
         pos_words = pos_tag(query_tokens)
         return [token for token, pos in pos_words if pos == 'NN']
 
