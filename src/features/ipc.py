@@ -1,7 +1,7 @@
 import collections
 import patentfields
 
-from features import vsm
+from features.vsm import single
 from tokenizer import free_text
 
 
@@ -17,14 +17,14 @@ IPC_SECTIONS = {
 }
 
 
-class IPCSectionLabels(vsm.VSMSingleFieldMinusStopwords):
+class IPCSectionLabels(single.VSMSingleFieldMinusStopwords):
     """VSM feature using the text descriptions of the IPC sections."""
-    def idf(self, *args, **kwargs):
+    def idf(self):
         return 1
 
-    def matches(self, term, compound_index):
+    def matches(self, term):
         for section, tokens in IPC_SECTIONS.iteritems():
-            if term.stem in tokens:
+            if term in tokens:
                 retval = []
                 for doc_id, val in compound_index.value_for_field(
                         patentfields.IPC_SECTION):

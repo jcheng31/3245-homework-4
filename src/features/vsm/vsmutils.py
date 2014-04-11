@@ -42,3 +42,8 @@ def idf(n, df):
     if df == 0 or n == 0:
         return 0
     return math.log(float(n) / df, LOG_BASE)
+
+
+def stemmed_tokens(query_tokens):
+    """Returns a list of stems from a list of tuples of query tokens."""
+    return [x.stem for x in query_tokens]

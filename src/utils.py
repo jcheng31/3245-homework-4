@@ -64,11 +64,10 @@ def dot_product(v1, v2):
     return sum(x * y for x, y in izip(v1, v2))
 
 
-def without_stopwords(tuples):
-    """Given a list of stem-unstemmed tuples, returns a list of tuples
-    without stopwords."""
+def without_stopwords(words):
+    """Given a list of words, returns a list of words without stopwords."""
     stop = stopwords.words('english')
-    return filter(lambda x: x.stem not in stop, tuples)
+    return [word for word in words if word not in stop]
 
 
 def synonyms(word):

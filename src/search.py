@@ -48,16 +48,18 @@ class Search(object):
 
     # Declaration of features and their weights.
     FEATURES = [
-        (vsm.VSMTitle(),                                -4.76739571),
-        (vsm.VSMAbstract(),                             -8.88366320),
-        (vsm.VSMTitleAndAbstract(),                     6.12626242),
+        (vsm.single.VSMTitle(),                             -4.76739571),
+        (vsm.single.VSMAbstract(),                          -8.88366320),
+        (vsm.single.VSMTitleMinusStopwords(),               1.24099070),
+        (vsm.single.VSMAbstractMinusStopwords(),            -8.34836190),
+        (vsm.single.VSMTitleNounsOnly(),                       0),
+        (vsm.single.VSMAbstractNounsOnly(),                    0),
 
-        (vsm.VSMTitleMinusStopwords(),                  1.24099070),
-        (vsm.VSMAbstractMinusStopwords(),               -8.34836190),
-        (vsm.VSMTitleAndAbstractMinusStopwords(),       0.573021021),
+        (vsm.multiple.VSMTitleAndAbstract(),                6.12626242),
+        (vsm.multiple.VSMTitleAndAbstractMinusStopwords(),  0.573021021),
 
-        (vsm.VSMTitleMinusStopwordsPlusExpansion(),     1.11057687),
-        (vsm.VSMAbstractMinusStopwordsPlusExpansion(),  1.06386125),
+        (vsm.expansion.VSMTitleMinusStopwordsPlusExpansion(),     1.11057687),
+        (vsm.expansion.VSMAbstractMinusStopwordsPlusExpansion(),  1.06386125),
 
         # (ipc.IPCSectionLabelsTitle(),                   1),
         # (ipc.IPCSectionLabelsAbstract(),                1),
