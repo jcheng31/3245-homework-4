@@ -118,6 +118,13 @@ class IndexBuilder(object):
 
 
 class DirectoryProcessor(object):
+    """
+    Processes all XML patent documents in a specified directory.
+
+    Zones from which free text may be extracted should be specified in ZONES.
+
+    Fields of a fixed format should be specified in FIELDS.
+    """
     ZONES = [
         patentfields.TITLE,
         patentfields.ABSTRACT,
@@ -145,6 +152,12 @@ class DirectoryProcessor(object):
     ]
 
     def __init__(self, doc_dir, indexer, free_text_tokenizer=None):
+        """
+        doc_dir: Directory containing XML files to process.
+        indexer: In-memory index.
+        free_text_tokenizer: Can be specified if a custom tokenizer is
+        preferred.
+        """
         # Normalize with trailing slash for consistency.
         if doc_dir[-1] != '/':
             doc_dir += '/'
@@ -154,6 +167,9 @@ class DirectoryProcessor(object):
         self.free_text_tokenizer = free_text_tokenizer or free_text
 
     def run(self):
+        """
+        Begins processing all XML files in the specified directory.
+        """
         for filename in os.listdir(self.__doc_dir):
             doc_id, extension = os.path.splitext(filename)
             if extension.lower() != '.xml':
@@ -168,6 +184,9 @@ class DirectoryProcessor(object):
         self.__indexer.serialize()
 
     def __process_patent(self, doc_id, info):
+        """
+        Processes a single patent XML.
+        """
         # Process free text.
         for zone in self.ZONES:
             text = info.get(zone)

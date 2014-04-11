@@ -6,7 +6,7 @@ from nltk import pos_tag
 
 
 class VSMSingleField(base.VSMBase):
-    """VSM feature using a single index.
+    """Base class for VSM on a single field.
 
     This looks at the stemmed tokens within a single component of the query.
     """
@@ -34,7 +34,7 @@ class VSMAbstract(VSMSingleField):
 
 
 class VSMSingleFieldMinusStopwords(VSMSingleField):
-    """VSM feature using a single field, removing stopwords."""
+    """Base class for VSM on a single field, removing stopwords from its text."""
     def query_tokens(self):
         query_tokens = super(VSMSingleFieldMinusStopwords,
             self).query_tokens()
@@ -52,7 +52,7 @@ class VSMAbstractMinusStopwords(VSMSingleFieldMinusStopwords):
 
 
 class VSMSingleFieldNounsOnly(VSMSingleField):
-    """VSM feature using a single field, considering only nouns."""
+    """Base class for VSM on a single field, considering only nouns."""
     def query_tokens(self):
         query_tokens = super(VSMSingleFieldNounsOnly,
             self).query_tokens()
