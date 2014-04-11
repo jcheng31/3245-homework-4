@@ -65,3 +65,5 @@ We suggest that we should be graded as follows:
 N/A
 
 == References ==
+Apart from the NLTK and Python documentation, we made use of the following
+resources:
