@@ -15,6 +15,7 @@ class FieldFeatureBase(object):
 
 
 class CitationCount(FieldFeatureBase):
+    """Scores documents using the base-10 logarithm of their citation count."""
     NAME = 'citationcount'
     FIELD = patentfields.CITED_BY_COUNT
 
