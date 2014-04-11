@@ -6,14 +6,21 @@ from helpers import cache
 class ClusterBase(object):
     """Feature that clusters enum type fields.
 
-    The intuition is that, of the relevant documents, if a particular enum
+    The intuition is that, for the relevant documents, if a particular enum
     appears more frequently among the documents that score well, this is a good
     signal for relevance.
+
+    For each relevant document (so far), we take a rough estimate of the score
+    add it to a bucket (based on that document's value in the specified field.)
+    We then boost all documents (not only the currently relevant ones) based on
+    which bucket they belong to.
     """
     INDEX = None
 
     @cache.naive_class_method_cache
     def get_cluster(self, compound_index, shared_obj, index):
+        """Returns a dicionary with the aggregated/average scores for each
+        field."""
         cluster = collections.defaultdict(lambda: 0)
         cluster_count = collections.defaultdict(lambda: 0)
 
@@ -24,6 +31,8 @@ class ClusterBase(object):
                 # NOTE(michael): We use a not so arbitrary weight here (The
                 # intuition is that is you score pretty well (roughly), your
                 # enum value counts for a little more.
+                # NOTE(michael): Ignore fields starting with 'Cluster' else we
+                # get a unwanted compounding effect.
                 weight = sum(v for k, v in score_dict.iteritems()
                     if not k.startswith('Cluster'))
                 cluster[val] += weight
@@ -38,6 +47,7 @@ class ClusterBase(object):
     def __call__(self, search, shared_obj):
         cluster = self.get_cluster(search.compound_index, shared_obj, self.INDEX)
 
+        # Boost documents base on the cluster the belong to.
         for doc_id, val in search.compound_index.value_for_field(self.INDEX):
             score = cluster.get(val, 0)
             if score:
