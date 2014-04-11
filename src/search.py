@@ -18,29 +18,30 @@ class Search(object):
 
     The main method is `execute`, which basically performs the search query by
     passing it through the various features (to calculate the score for the
-    feature).
+    feature). The results of the search can be retrieved using the `results`
+    method.
 
-    For instance, a basic implementation could have two features:
+    At a high level, the search calculate the feature scores for each document
+    and aggregates these scores into a feature score vector.
 
-        - boolean query
-        - number of citations
+        doc1 => (s1, s2, ... sn),
+        doc2 => (s1, s2, ... sn),
+        ...
 
-    After passing the query through the two features, each document will have a
-    tuple representing its score. (If a score is not set, we default the score
-    to 0).
-
-        eg.
-            (a1, a2)
-            (b1, b2)
-            (c1, c2)
-            ...
+    Each of these features could be a simple vsm on a single index, or a score
+    based on how many citations the document has.
 
     We then do a dot product of these scores against a tuple of various
     predefined thresholds to arrive at a final absolute score for each
     document.
 
-    Notice that the thresholds of particular features can therefore be tweaked
-    independent of other to tune the search system based on feedback.
+    Based on these scores, the documents are sorted and returned in order.
+    (We optionally have a min score that defines a minimum score that a document
+    has to hit in order to qualify as 'relevant')
+
+    Notice that the weights of particular features can therefore be tweaked
+    independently of other features to tune the search system based on
+    feedback/training.
     """
 
     # Arbitrary minimum score of a relevant document.
@@ -84,6 +85,7 @@ class Search(object):
 
         (fields.CitationCount(),                                3.00748938),
 
+        # Unused features (these don't seem to work too well. Oh well.)
         # (relation.Citations(),                                  0),
         # (relation.FamilyMembers(),                              0),
         # (ipc.IPCSectionLabelsTitle(),                           1),
@@ -126,6 +128,7 @@ class Search(object):
         self.features_weights = weights
 
     def override_min_score(self, min_score):
+        """Overrides the min_score."""
         self.min_score = min_score
 
     def get_tokens_for(self, index, unstemmed=False):
@@ -150,10 +153,13 @@ class Search(object):
         return [x for x in tokens if x not in string.punctuation]
 
     def execute(self):
-        """Executes the search by running all features."""
-        # Loop through all our feature functions. Each feature
-        # updates self.shared_search_obj with its score for
-        # each document.
+        """Executes the search by iterating through all features.
+
+        Since features can be added arbitrarily and are typically added by
+        multiple developers, we add a try catch here for each feature. Failure
+        of one feature should not take down the entire system."""
+        # Loop through all our feature functions. Each feature updates
+        # self.shared_search_obj with its score for each document.
         for feature in self.features:
             try:
                 feature(self, self.shared_search_obj)
@@ -164,36 +170,23 @@ class Search(object):
 
         return self
 
-    def results(self, verbose=False):
+    def results(self):
         """Returns a list of documents that match the search query, in order
         of relevance.
-
-        If the verbose argument is set, returns a dictionary keyed by document
-        name and with value:
-
-            [<score>, <feature vector scores>, doc_id]
-            ...
 
         NOTE: This is separated from execute so we can vary weights during the
         learning phase without recomputing the unweighted feature scores.
         """
-
         # Generate a list of documents, in descending order of relevance,
         # where the score of each document is above our threshold.
         results = self.calculate_score(
             self.shared_search_obj.doc_ids_to_scores)
-        results.sort(reverse=True)  # Highest score first.
-        results = [r for r in results if r[0] > self.min_score]
 
-        if verbose:
-            # Instead, generate the dictionary described in the docstring
-            # above and return it.
-            retval = {}
-            for elem in results:
-                doc_name = self.compound_index.document_name_for_guid(
-                    str(elem[-1]))
-                retval[doc_name] = elem
-            return retval
+        # Highest score first.
+        results.sort(reverse=True)
+
+        # Filter out results below the min_score
+        results = [r for r in results if r[0] > self.min_score]
 
         return [self.compound_index.document_name_for_guid(str(elem[-1]))
                 for elem in results]
@@ -219,7 +212,7 @@ class Search(object):
 
     @property
     def query_description(self):
-        # Remove description prefix
+        """Returns the description of the query, less the standard prefix."""
         description_prefix = 'Relevant documents will describe '
         raw = self.__query['description']
         if raw.startswith(description_prefix):
@@ -236,14 +229,9 @@ class SharedSearchObject(object):
     def __init__(self):
         self.doc_ids_to_scores = {}
 
-    def has_score(self, doc_id):
-        """Given a document ID, returns whether or not
-        that document already has some score recorded."""
-        return self.doc_ids_to_scores.get(doc_id)
-
     def set_feature_score(self, feature, doc_id, score):
-        """Given a feature name, document ID, and a score,
-        updates the score of that document ID for the feature."""
+        """Given a feature name, document ID, and a score, updates the score of
+        that document ID for the feature."""
         if not self.doc_ids_to_scores.get(doc_id):
             self.doc_ids_to_scores[doc_id] = {}
         self.doc_ids_to_scores[doc_id][feature] = score
