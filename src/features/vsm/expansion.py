@@ -35,6 +35,8 @@ class VSMSingleFieldMinusStopwordsPlusExpansion(
         term_postings = \
             set(self.compound_index.postings_list(self.INDEX, term))
 
+        # Convert the postings list into a dictionary,
+        # where keys are doc IDs and values are term counts.
         posting_dict = {}
         for posting in term_postings:
             posting_dict[posting[0]] = posting[1]
@@ -44,12 +46,13 @@ class VSMSingleFieldMinusStopwordsPlusExpansion(
         unstemmed = self.stemmed_unstemmed_map(self.INDEX)[term]
         synonyms = thesaurus[unstemmed]
 
-        # Add each synonym's postings to the main posting list.
         for synonym in synonyms:
+            # Get the postings for this synonym.
             stemmed_synonym = tokenizer(synonym)[0]
             postings = self.compound_index.postings_list(
                 self.INDEX, stemmed_synonym)
 
+            # Update the existing postings with each synonym's count.
             for posting in postings:
                 doc_id = posting[0]
                 count = posting[1]
@@ -59,6 +62,7 @@ class VSMSingleFieldMinusStopwordsPlusExpansion(
                 else:
                     posting_dict[doc_id] = count
 
+        # Convert the posting dictionary back into a posting list.
         combined_postings = []
         for doc_id, count in posting_dict.iteritems():
             combined_postings.append([doc_id, count])
