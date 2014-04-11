@@ -3,7 +3,14 @@ Matric Numbers: A0092104U, A0082877M, A0080860H
 Emails: a0092104@nus.edu.sg, a0082877@nus.edu.sg, a0080860@nus.edu.sg
 
 == General Notes about this assignment ==
-
+* Overview of the System
+* System Architecture
+* How system deals with optional components
+  - Query Expansion
+  - External Resources
+  - Field/Zone treatment
+  - Runtime optimization
+* Allocation of work
 
 
 == Files included with this submission ==
