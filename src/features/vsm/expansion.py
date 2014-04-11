@@ -35,6 +35,10 @@ class VSMSingleFieldMinusStopwordsPlusExpansion(
         term_postings = \
             set(self.compound_index.postings_list(self.INDEX, term))
 
+        posting_dict = {}
+        for posting in term_postings:
+            posting_dict[posting[0]] = posting[1]
+
         # Find synonyms of the term from our thesaurus.
         thesaurus = Thesaurus()
         unstemmed = self.stemmed_unstemmed_map(self.INDEX)[term]
@@ -45,9 +49,22 @@ class VSMSingleFieldMinusStopwordsPlusExpansion(
             stemmed_synonym = tokenizer(synonym)[0]
             postings = self.compound_index.postings_list(
                 self.INDEX, stemmed_synonym)
-            term_postings = term_postings.union(postings)
 
-        return sorted(term_postings)
+            print stemmed_synonym
+            for posting in postings:
+                doc_id = posting[0]
+                count = posting[1]
+
+                if doc_id in posting_dict:
+                    posting_dict[doc_id] += count
+                else:
+                    posting_dict[doc_id] = count
+
+        combined_postings = []
+        for doc_id, count in posting_dict.iteritems():
+            combined_postings.append([doc_id, count])
+
+        return sorted(combined_postings)
 
 
 class VSMTitleMinusStopwordsPlusExpansion(
