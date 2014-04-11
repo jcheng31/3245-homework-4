@@ -12,8 +12,8 @@ class VSMSingleFieldMinusStopwordsPlusExpansion(
     word in the field (ignoring stopwords.)"""
 
     def stemmed_unstemmed_map(self, index):
-        """Given an index, returns a dictionary where keys are stems of the 
-        words contained within, and values are the corresponding unstemmed 
+        """Given an index, returns a dictionary where keys are stems of the
+        words contained within, and values are the corresponding unstemmed
         word."""
         # TODO(michael): Cache this value.
         stemmed_unstemmed_dict = {}
@@ -50,7 +50,6 @@ class VSMSingleFieldMinusStopwordsPlusExpansion(
             postings = self.compound_index.postings_list(
                 self.INDEX, stemmed_synonym)
 
-            print stemmed_synonym
             for posting in postings:
                 doc_id = posting[0]
                 count = posting[1]
