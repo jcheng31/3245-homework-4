@@ -1,21 +1,8 @@
 from nltk import pos_tag, word_tokenize, sent_tokenize
 from nltk.stem.snowball import SnowballStemmer
-# from nltk.stem.porter import PorterStemmer
 
 
 __stemmer = SnowballStemmer('english')
-# __stemmer = PorterStemmer()
-
-
-# def stem_except_nouns_adjectives(words):
-#     pos_words = pos_tag(words)
-#     result = []
-#     for token, pos in pos_words:
-#         if pos in ['NN', 'JJ']:
-#             result += token
-#         else:
-#             result += __stemmer.stem(token)
-#     return result
 
 
 def stem_all(words):
