@@ -113,17 +113,15 @@ def learn(compound_index):
         return avg_f
 
     def train_f(weights):
-        train_f.counter += 1
         total = 0
         for idx in xrange(4):
             val = f(weights, dataset=idx)
             total += (1 - val)
 
-        if train_f.counter % 100 == 0 and total < 1.86:
+        if total < 1.87:
             print weights, total
 
         return total
-    train_f.counter = 0
 
     print '# Root mean squared with current weights'
     print 'Dataset 0:', f(None, 0)
