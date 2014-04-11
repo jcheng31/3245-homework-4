@@ -267,8 +267,6 @@ def main(args):
 
 
 if __name__ == '__main__':
-    print 'version: 1'
-
     parser = argparse.ArgumentParser(description='Patsnap assignment - Search')
     parser.add_argument('-d', '--dictionary', required=True,
                         help='dictionary file.')
