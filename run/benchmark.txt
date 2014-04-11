@@ -1,32 +1,32 @@
 Query 1
 # Copyright 2006 © by Min-Yen Kan
-Average F: 0.530636951343794
-Average Precision: 0.454779948195389
-Average Recall: 0.630007855459543
-Count: 2236
+Average F: 0.530210004832668
+Average Precision: 0.46212865863309
+Average Recall: 0.627563934712402
+Count: 2220
 Correct: 51
 Points Judged: 201
 Query 2
 # Copyright 2006 © by Min-Yen Kan
-Average F: 0.67400727772127
-Average Precision: 0.612284001381057
-Average Recall: 0.770750952212136
-Count: 2231
+Average F: 0.655545292082267
+Average Precision: 0.588576971752498
+Average Recall: 0.752349590574658
+Count: 2229
 Correct: 447
-Points Judged: 1438
+Points Judged: 1437
 Query 3
 # Copyright 2006 © by Min-Yen Kan
-Average F: 0.49509140727095
-Average Precision: 0.304813232842757
-Average Recall: 0.684387111702437
-Count: 2233
+Average F: 0.519028955175743
+Average Precision: 0.336516373483667
+Average Recall: 0.710765314976574
+Count: 2198
 Correct: 59
 Points Judged: 293
 Query 4
 # Copyright 2006 © by Min-Yen Kan
-Average F: 0.409802498367894
-Average Precision: 0.197499595045523
-Average Recall: 0.638156499611224
-Count: 2233
+Average F: 0.427488617872334
+Average Precision: 0.221786247498367
+Average Recall: 0.65561603166749
+Count: 2232
 Correct: 47
 Points Judged: 301

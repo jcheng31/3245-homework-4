@@ -1,3 +1,4 @@
+#!/usr/env/python
 import argparse
 import json
 import os
@@ -7,8 +8,17 @@ import utils
 
 from nltk import pos_tag, word_tokenize, sent_tokenize
 
+# Note:
+# This file is used to download an offline copy of a thesaurus, stored as a
+# JSON dictionary. It should not be run unless a new API endpoint is used.
+
 
 def tokenize(text):
+    """
+    Tokenizes a string using sent_tokenize and word_tokenize.
+
+    Does not stem individual words.
+    """
     words = []
     sentences = sent_tokenize(text)
     for sent in sentences:
@@ -18,6 +28,13 @@ def tokenize(text):
 
 
 def extract_nouns_and_adjectives(words):
+    """
+    For a given list of pos-tagged words, removes words with tags that are
+    not in a whitelist.
+
+    Mnemonics for other parts of speech can be found at the following URL:
+    http://www.monlp.com/2011/11/08/part-of-speech-tags/
+    """
     pos_words = pos_tag(words)
     nouns = set()
     for token, pos in pos_words:
@@ -25,6 +42,8 @@ def extract_nouns_and_adjectives(words):
             nouns.add(token)
     return list(nouns)
 
+
+# The Watson Thesaurus was not comprehensive enough for our use case.
 
 # class WatsonThesaurus(object):
 #     ENDPOINT = 'http://watson.kmi.open.ac.uk/API/term/synonyms?term={term}'
@@ -72,34 +91,61 @@ def extract_nouns_and_adjectives(words):
 
 
 class AltervistaThesaurus(object):
+    """
+    Source: See ENDPOINT.
+    """
     ENDPOINT = 'http://thesaurus.altervista.org/thesaurus/v1?word={term}&' + \
                'language=en_US&key={key}&output=json'
+
+    # This key will be revoked after the course. It is not required as a local
+    # copy of the downloaded thesaurus is already provided in `thesaurus.json`.
     API_KEY = 'PAkqMalR6aTH3rTcndnT'
 
     @staticmethod
     def build_thesaurus(words, outfile, limit=None):
+        """
+        Given a list of words, queries the API and builds a local copy of the
+        thesaurus, stored as a JSON file at outfile.
+
+        The parameter limit can be used to debug the implementation by
+        specifying the number of words to be downloaded.
+
+        Some APIs may temporarily ban an IP address that makes too many
+        requests in a short span of time. This implementation does not provide
+        rate limiting functionality as this particular endpoint is not rate
+        limited.
+        """
         thesaurus = {}
+
+        # Keep count of words processed so far as a progress meter.
         print 'Words: {}'.format(len(words))
         count = 0
+
         for w in words:
             try:
+                # Update progress meter.
                 count += 1
                 if count % 10 == 0:
                     print 'Processed: {} of {}'.format(count, len(words))
+
+                # Make request to endpoint.
                 url = AltervistaThesaurus.ENDPOINT.format(
                     term=w, key=AltervistaThesaurus.API_KEY)
                 response = requests.get(url)
                 json_obj = response.json()
-
                 synonyms = AltervistaThesaurus.__parse_response(json_obj)
             except Exception:
                 synonyms = []
                 print 'Exception in: ', w
 
+            # Assign list of synonyms to the corresponding word, or an empty
+            # list.
             thesaurus[w] = synonyms
 
+            # Debug instrumentation.
             if limit and count >= limit:
                 break
+
         print 'Writing file...'
         with open(outfile, 'w') as f:
             json.dump(thesaurus, f)
@@ -107,6 +153,9 @@ class AltervistaThesaurus(object):
 
     @staticmethod
     def __parse_response(json_obj):
+        """
+        Parses the JSON object that the API returns.
+        """
         if 'error' in json_obj or 'response' not in json_obj:
             return []
 
@@ -132,12 +181,22 @@ class AltervistaThesaurus(object):
 
 
 class DirectoryProcessor(object):
+    """
+    Processes all XML files in a given directory.
+
+    The fields from each XML file that should be extracted must be specified
+    in the class parameter ZONES.
+    """
     ZONES = [
         patentfields.TITLE,
         patentfields.ABSTRACT,
     ]
 
     def __init__(self, doc_dir, out_file):
+        """
+        doc_dir: The directory containing the XML documents to process.
+        out_file: The file to which the JSON thesaurus will be written.
+        """
         # Normalize with trailing slash for consistency.
         if doc_dir[-1] != '/':
             doc_dir += '/'
@@ -146,6 +205,9 @@ class DirectoryProcessor(object):
         self.__out_file = out_file
 
     def run(self):
+        """
+        Begins downloading thesaurus.
+        """
         words = []
         for filename in os.listdir(self.__doc_dir):
             doc_id, extension = os.path.splitext(filename)
@@ -161,6 +223,9 @@ class DirectoryProcessor(object):
         AltervistaThesaurus.build_thesaurus(nouns, self.__out_file)
 
     def __process_patent(self, doc_id, info):
+        """
+        Processes a single patent XML.
+        """
         words = []
         for zone in self.ZONES:
             text = info.get(zone)
