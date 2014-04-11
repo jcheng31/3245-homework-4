@@ -36,8 +36,8 @@ class Search(object):
     document.
 
     Based on these scores, the documents are sorted and returned in order.
-    (We optionally have a min score that defines a minimum score that a document
-    has to hit in order to qualify as 'relevant')
+    (We optionally have a min score that defines a minimum score that a
+    document has to hit in order to qualify as 'relevant')
 
     Notice that the weights of particular features can therefore be tweaked
     independently of other features to tune the search system based on
@@ -96,7 +96,8 @@ class Search(object):
         self.__compound_index = compound_index
         self.__query = utils.parse_query_xml(query_xml)
 
-        # Dictionary containing the raw text for the query's title and description.
+        # Dictionary containing the raw text for the query's title and
+        # description.
         self.__text = {
             patentfields.TITLE: self.query_title,
             patentfields.ABSTRACT: self.query_description
