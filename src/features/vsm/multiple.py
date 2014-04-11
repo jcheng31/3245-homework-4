@@ -8,7 +8,7 @@ from features.vsm.vsmutils import *
 
 
 class VSMMultipleFields(base.VSMBase):
-    """VSM feature using multiple indices."""
+    """Base class for VSM on multiple fields."""
     ZONES = []
 
     def idf(self, term):

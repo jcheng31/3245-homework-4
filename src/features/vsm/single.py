@@ -6,7 +6,7 @@ from nltk import pos_tag
 
 
 class VSMSingleField(base.VSMBase):
-    """VSM feature using a single index.
+    """Base class for VSM on a single field.
 
     This looks at the stemmed tokens within a single component of the query.
     """
