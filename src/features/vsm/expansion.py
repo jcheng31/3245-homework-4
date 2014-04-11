@@ -8,7 +8,13 @@ from tokenizer import free_text as tokenizer
 
 class VSMSingleFieldMinusStopwordsPlusExpansion(
         single.VSMSingleFieldMinusStopwords):
+    """Base class for VSM on a single field using synonym expansion of each
+    word in the field (ignoring stopwords.)"""
+
     def stemmed_unstemmed_map(self, index):
+        """Given an index, returns a dictionary where keys are stems of the 
+        words contained within, and values are the corresponding unstemmed 
+        word."""
         # TODO(michael): Cache this value.
         stemmed_unstemmed_dict = {}
         stems = self.search.get_tokens_for(index)
@@ -20,6 +26,11 @@ class VSMSingleFieldMinusStopwordsPlusExpansion(
         return stemmed_unstemmed_dict
 
     def matches(self, term):
+        """Given a term, returns a list of postings for that term and its
+        synonyms.
+
+        We find synonyms for the given term, obtain their postings, and merge
+        them with the \"original\" list of postings for the term itself."""
         # Obtain the postings list for this term.
         term_postings = \
             set(self.compound_index.postings_list(self.INDEX, term))
