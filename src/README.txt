@@ -15,7 +15,37 @@ Emails: a0092104@nus.edu.sg, a0082877@nus.edu.sg, a0080860@nus.edu.sg
 
 == Files included with this submission ==
 README.txt - this text file.
-
+compoundindex.py
+features/
+	__init__.py
+	cluster.py
+	fields.py
+	ipc.py
+	relation.py
+	vsm/
+		__init__.py
+		base.py
+		expansion.py
+		multiple.py
+		single.py
+		test_vsmutils.py
+		vsmutils.py
+helpers/
+	__init__.py
+	cache.py
+	ordered_dict.py
+	test_cache.py
+	test_ordered_dict.py
+index.py
+indexfields.py
+learn.py
+patentfields.py
+search.py
+thesaurus.json
+thesaurus.py
+thesaurus_builder.py
+tokenizer.py
+utils.py
 
 == Adherence to Class Guidelines ==
 

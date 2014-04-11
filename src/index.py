@@ -11,6 +11,13 @@ from tokenizer import free_text
 
 
 class IndexBuilder(object):
+    """
+    Abstracts an in-memory index-dictionary that is designed to only be
+    inserted to. For retreival, see compoundindex.py.
+
+    This class is used to preprocess patent documents.
+    """
+    # Stores a monotonically increasing guid for terms added to the index.
     guid = 0
 
     def __init__(self, dict_path, postings_path):
@@ -47,6 +54,10 @@ class IndexBuilder(object):
         self.m_file[indexfields.FIELDS][guid][field] = val
 
     def add_tokens_for_zone(self, tokens, doc_id, key):
+        """
+        Adds a list of tokens corresponding to a doc_id to the zone specified
+        by 'key'.
+        """
         guid = self.get_guid(doc_id)
 
         # Create an index for the specified field (key) if it does not already
@@ -75,6 +86,9 @@ class IndexBuilder(object):
                 dictionary[term] = [_tuple]
 
     def serialize(self, pretty=False):
+        """
+        Writes the in-memory index-dictioanry to a JSON file.
+        """
         indices = self.m_file[indexfields.ZONES]
         for key in indices:
             # We convert the document-set for each index to a sorted list so
@@ -112,6 +126,9 @@ class IndexBuilder(object):
 
     @staticmethod
     def next_guid():
+        """
+        Enforces montonicity of guid.
+        """
         val = IndexBuilder.guid
         IndexBuilder.guid += 1
         return val
