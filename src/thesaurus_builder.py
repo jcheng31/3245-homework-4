@@ -17,7 +17,7 @@ def tokenize(text):
     return words
 
 
-def extract_nouns(words):
+def extract_nouns_and_adjectives(words):
     pos_words = pos_tag(words)
     nouns = set()
     for token, pos in pos_words:
@@ -109,7 +109,7 @@ class AltervistaThesaurus(object):
     def __parse_response(json_obj):
         if 'error' in json_obj or 'response' not in json_obj:
             return []
-        
+
         all_synonyms = set()
         forms = json_obj['response']
         for form in forms:
@@ -157,7 +157,7 @@ class DirectoryProcessor(object):
             patent_info = utils.xml_file_to_dict(full_path)
             words += self.__process_patent(doc_id, patent_info)
         unique_words = list(set(words))
-        nouns = extract_nouns(unique_words)
+        nouns = extract_nouns_and_adjectives(unique_words)
         AltervistaThesaurus.build_thesaurus(nouns, self.__out_file)
 
     def __process_patent(self, doc_id, info):
