@@ -45,6 +45,9 @@ def learn(compound_index):
     # We try to fit a function: `y = w1.x1 + w2.x2 ... wn.xn`
     # Where y values for known positive docs are 1 and 0 otherwise.
     t = training_data()
+
+    # Use current weights so we don't start computing from scratch each time.
+    starting_coeffs = [w for f, w in search.Search.FEATURES]
     for qname, q in t.iteritems():
         s = search.Search(q['query'], compound_index)
         q['search'] = s.execute()
@@ -116,13 +119,11 @@ def learn(compound_index):
             val = f(weights, dataset=idx)
             total += (1 - val)
 
-        # if train_f.counter % 100 == 0 and total < 1.86:
-        #     print weights, total
+        if train_f.counter % 100 == 0 and total < 1.86:
+            print weights, total
 
         return total
     train_f.counter = 0
-
-    starting_coeffs = [1] * len(search.Search.FEATURES)
 
     print '# Root mean squared with current weights'
     print 'Dataset 0:', f(None, 0)

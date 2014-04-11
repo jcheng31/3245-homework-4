@@ -48,42 +48,42 @@ class Search(object):
 
     # Declaration of features and their weights.
     FEATURES = [
-        (vsm.VSMTitle(),                                0),
-        (vsm.VSMAbstract(),                             0),
-        (vsm.VSMTitleAndAbstract(),                     0),
+        (vsm.VSMTitle(),                                -4.76077042),
+        (vsm.VSMAbstract(),                             -10.78278743),
+        (vsm.VSMTitleAndAbstract(),                     7.68774728),
 
-        (vsm.VSMTitleMinusStopwords(),                  10),
-        (vsm.VSMAbstractMinusStopwords(),               8),
-        (vsm.VSMTitleAndAbstractMinusStopwords(),       6),
+        (vsm.VSMTitleMinusStopwords(),                  0.94963462),
+        (vsm.VSMAbstractMinusStopwords(),               -8.45635778),
+        (vsm.VSMTitleAndAbstractMinusStopwords(),       0.82181193),
 
-        (vsm.VSMTitleMinusStopwordsPlusExpansion(),     5),
-        (vsm.VSMAbstractMinusStopwordsPlusExpansion(),  5),
+        (vsm.VSMTitleMinusStopwordsPlusExpansion(),     1.01882405),
+        (vsm.VSMAbstractMinusStopwordsPlusExpansion(),  1.00527037),
 
         # (ipc.IPCSectionLabelsTitle(),                   1),
         # (ipc.IPCSectionLabelsAbstract(),                1),
 
         # clusters
         (cluster.cluster_feature_generator(
-            patentfields.IPC_SECTION)(),                1),
+            patentfields.IPC_SECTION)(),                3.58792896),
         (cluster.cluster_feature_generator(
-            patentfields.IPC_CLASS)(),                  2),
+            patentfields.IPC_CLASS)(),                  7.76432611),
         (cluster.cluster_feature_generator(
-            patentfields.IPC_GROUP)(),                  4),
+            patentfields.IPC_GROUP)(),                  3.1524329),
         (cluster.cluster_feature_generator(
-            patentfields.IPC_PRIMARY)(),                6),
+            patentfields.IPC_PRIMARY)(),                0.9973575),
         (cluster.cluster_feature_generator(
-            patentfields.IPC_SUBCLASS)(),               8),
+            patentfields.IPC_SUBCLASS)(),               1),
         (cluster.cluster_feature_generator(
-            patentfields.ALL_IPC)(),                    10),
+            patentfields.ALL_IPC)(),                    3.58792896),
 
         (cluster.cluster_feature_generator(
-            patentfields.ALL_UPC)(),                    1),
+            patentfields.ALL_UPC)(),                    1.01279276),
         (cluster.cluster_feature_generator(
-            patentfields.UPC_PRIMARY)(),                1),
+            patentfields.UPC_PRIMARY)(),                -0.16678862),
         (cluster.cluster_feature_generator(
-            patentfields.UPC_CLASS)(),                  1),
+            patentfields.UPC_CLASS)(),                  0.32148819),
 
-        (fields.CitationCount(),                        1),
+        (fields.CitationCount(),                        2.73311628),
 
         # (relation.Citations(),                          0),
         # (relation.FamilyMembers(),                      0),
@@ -269,29 +269,6 @@ def main(args):
     # Execute the query.
     s = Search(query_xml, compound_index)
     s.execute()
-
-    # NOTE(michael): Lazy to format the weights nicely above...
-    s.override_features_weights([
-        -4.76077042,
-        -10.78278743,
-        7.68774728,
-        0.94963462,
-        -8.45635778,
-        0.82181193,
-        1.01882405,
-        1.00527037,
-        3.58792896,
-        7.76432611,
-        3.1524329,
-        0.9973575,
-        1.,
-        3.58792896,
-        1.01279276,
-        -0.16678862,
-        0.32148819,
-        2.73311628,
-    ])
-
     results = s.results()
 
     # Write results to file.
