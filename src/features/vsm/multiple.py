@@ -8,7 +8,7 @@ from features.vsm.vsmutils import *
 
 
 class VSMMultipleFields(base.VSMBase):
-    """VSM feature using multiple indices."""
+    """Base class for VSM on multiple fields."""
     ZONES = []
 
     def idf(self, term):
@@ -45,7 +45,8 @@ class VSMMultipleFields(base.VSMBase):
 
 
 class VSMMultipleFieldsMinusStopwords(VSMMultipleFields):
-    """VSM feature using multiple indices, removing stopwords."""
+    """Base class for VSM on multiple indices, removing stopwords from their
+    text."""
     def query_tokens(self):
         query_tokens = super(VSMMultipleFieldsMinusStopwords,
             self).query_tokens()
