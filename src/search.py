@@ -48,47 +48,46 @@ class Search(object):
 
     # Declaration of features and their weights.
     FEATURES = [
-        (vsm.single.VSMTitle(),                             -4.76739571),
-        (vsm.single.VSMAbstract(),                          -8.88366320),
-        (vsm.single.VSMTitleMinusStopwords(),               1.24099070),
-        (vsm.single.VSMAbstractMinusStopwords(),            -8.34836190),
-        (vsm.single.VSMTitleNounsOnly(),                       0),
-        (vsm.single.VSMAbstractNounsOnly(),                    0),
+        (vsm.single.VSMTitle(),                                 -4.76739571),
+        (vsm.single.VSMAbstract(),                              -8.88366320),
+        (vsm.single.VSMTitleMinusStopwords(),                   1.24099070),
+        (vsm.single.VSMAbstractMinusStopwords(),                -8.34836190),
+        (vsm.single.VSMTitleNounsOnly(),                        0),
+        (vsm.single.VSMAbstractNounsOnly(),                     0),
 
-        (vsm.multiple.VSMTitleAndAbstract(),                6.12626242),
-        (vsm.multiple.VSMTitleAndAbstractMinusStopwords(),  0.573021021),
+        (vsm.multiple.VSMTitleAndAbstract(),                    6.12626242),
+        (vsm.multiple.VSMTitleAndAbstractMinusStopwords(),      0.573021021),
 
-        (vsm.expansion.VSMTitleMinusStopwordsPlusExpansion(),     1.11057687),
-        (vsm.expansion.VSMAbstractMinusStopwordsPlusExpansion(),  1.06386125),
-
-        # (ipc.IPCSectionLabelsTitle(),                   1),
-        # (ipc.IPCSectionLabelsAbstract(),                1),
+        (vsm.expansion.VSMTitleMinusStopwordsPlusExpansion(),   1.11057687),
+        (vsm.expansion.VSMAbstractMinusStopwordsPlusExpansion(),1.06386125),
 
         # clusters
         (cluster.cluster_feature_generator(
-            patentfields.IPC_SECTION)(),                4.53758000),
+            patentfields.IPC_SECTION)(),                        4.53758000),
         (cluster.cluster_feature_generator(
-            patentfields.IPC_CLASS)(),                  -0.00503028309),
+            patentfields.IPC_CLASS)(),                          -0.00503028309),
         (cluster.cluster_feature_generator(
-            patentfields.IPC_GROUP)(),                  1.97535061),
+            patentfields.IPC_GROUP)(),                          1.97535061),
         (cluster.cluster_feature_generator(
-            patentfields.IPC_PRIMARY)(),                1.00828631),
+            patentfields.IPC_PRIMARY)(),                        1.00828631),
         (cluster.cluster_feature_generator(
-            patentfields.IPC_SUBCLASS)(),               0.931158204),
+            patentfields.IPC_SUBCLASS)(),                       0.931158204),
         (cluster.cluster_feature_generator(
-            patentfields.ALL_IPC)(),                    16.5275738),
+            patentfields.ALL_IPC)(),                            16.5275738),
 
         (cluster.cluster_feature_generator(
-            patentfields.ALL_UPC)(),                    1.01484067),
+            patentfields.ALL_UPC)(),                            1.01484067),
         (cluster.cluster_feature_generator(
-            patentfields.UPC_PRIMARY)(),                -0.264923096),
+            patentfields.UPC_PRIMARY)(),                        -0.264923096),
         (cluster.cluster_feature_generator(
-            patentfields.UPC_CLASS)(),                  -0.518853981),
+            patentfields.UPC_CLASS)(),                          -0.518853981),
 
-        (fields.CitationCount(),                        3.00748938),
+        (fields.CitationCount(),                                3.00748938),
 
-        # (relation.Citations(),                          0),
-        # (relation.FamilyMembers(),                      0),
+        # (relation.Citations(),                                  0),
+        # (relation.FamilyMembers(),                              0),
+        # (ipc.IPCSectionLabelsTitle(),                           1),
+        # (ipc.IPCSectionLabelsAbstract(),                        1),
     ]
 
     def __init__(self, query_xml, compound_index):
