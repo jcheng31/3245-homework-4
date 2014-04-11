@@ -2,6 +2,8 @@ from nltk import pos_tag, word_tokenize, sent_tokenize
 from nltk.stem.snowball import SnowballStemmer
 
 
+# Initialise the stemmer exactly once to remove overheads when running
+# multiple times.
 __stemmer = SnowballStemmer('english')
 
 
@@ -26,5 +28,3 @@ def free_text(text):
         print u'TypeError while processing text: {}\nNo tokens were returned' \
               .format(text)
         return []
-
-
