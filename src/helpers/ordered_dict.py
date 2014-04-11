@@ -1,4 +1,5 @@
 class OrderedDict(object):
+    """Drop-in collections.OrderedDict replacement for Python 2.6 and below."""
     def __init__(self):
         self._innerdict = {}
         self._keys = []
