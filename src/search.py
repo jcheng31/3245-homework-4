@@ -48,42 +48,42 @@ class Search(object):
 
     # Declaration of features and their weights.
     FEATURES = [
-        (vsm.VSMTitle(),                                -4.76077042),
-        (vsm.VSMAbstract(),                             -10.78278743),
-        (vsm.VSMTitleAndAbstract(),                     7.68774728),
+        (vsm.VSMTitle(),                                -4.76739571),
+        (vsm.VSMAbstract(),                             -8.88366320),
+        (vsm.VSMTitleAndAbstract(),                     6.12626242),
 
-        (vsm.VSMTitleMinusStopwords(),                  0.94963462),
-        (vsm.VSMAbstractMinusStopwords(),               -8.45635778),
-        (vsm.VSMTitleAndAbstractMinusStopwords(),       0.82181193),
+        (vsm.VSMTitleMinusStopwords(),                  1.24099070),
+        (vsm.VSMAbstractMinusStopwords(),               -8.34836190),
+        (vsm.VSMTitleAndAbstractMinusStopwords(),       0.573021021),
 
-        (vsm.VSMTitleMinusStopwordsPlusExpansion(),     1.01882405),
-        (vsm.VSMAbstractMinusStopwordsPlusExpansion(),  1.00527037),
+        (vsm.VSMTitleMinusStopwordsPlusExpansion(),     1.11057687),
+        (vsm.VSMAbstractMinusStopwordsPlusExpansion(),  1.06386125),
 
         # (ipc.IPCSectionLabelsTitle(),                   1),
         # (ipc.IPCSectionLabelsAbstract(),                1),
 
         # clusters
         (cluster.cluster_feature_generator(
-            patentfields.IPC_SECTION)(),                3.58792896),
+            patentfields.IPC_SECTION)(),                4.53758000),
         (cluster.cluster_feature_generator(
-            patentfields.IPC_CLASS)(),                  7.76432611),
+            patentfields.IPC_CLASS)(),                  -0.00503028309),
         (cluster.cluster_feature_generator(
-            patentfields.IPC_GROUP)(),                  3.1524329),
+            patentfields.IPC_GROUP)(),                  1.97535061),
         (cluster.cluster_feature_generator(
-            patentfields.IPC_PRIMARY)(),                0.9973575),
+            patentfields.IPC_PRIMARY)(),                1.00828631),
         (cluster.cluster_feature_generator(
-            patentfields.IPC_SUBCLASS)(),               1),
+            patentfields.IPC_SUBCLASS)(),               0.931158204),
         (cluster.cluster_feature_generator(
-            patentfields.ALL_IPC)(),                    3.58792896),
+            patentfields.ALL_IPC)(),                    16.5275738),
 
         (cluster.cluster_feature_generator(
-            patentfields.ALL_UPC)(),                    1.01279276),
+            patentfields.ALL_UPC)(),                    1.01484067),
         (cluster.cluster_feature_generator(
-            patentfields.UPC_PRIMARY)(),                -0.16678862),
+            patentfields.UPC_PRIMARY)(),                -0.264923096),
         (cluster.cluster_feature_generator(
-            patentfields.UPC_CLASS)(),                  0.32148819),
+            patentfields.UPC_CLASS)(),                  -0.518853981),
 
-        (fields.CitationCount(),                        2.73311628),
+        (fields.CitationCount(),                        3.00748938),
 
         # (relation.Citations(),                          0),
         # (relation.FamilyMembers(),                      0),
