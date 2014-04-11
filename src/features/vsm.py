@@ -7,17 +7,40 @@ from vsmutils import *
 from thesaurus import Thesaurus
 from tokenizer import free_text as tokenizer
 
+# Each of these classes is used to handle vector space model scoring
+# for a given search query.
+# We use these classes in an inheritance hierarchy, to provide the following
+# "types" of VSM scoring:
+#   * Single Field
+#     - This looks at the stemmed tokens within a single component of the query.
+#   * Multiple Field
+#     - This looks at the stemmed tokens within both the title and description
+#       given in the query.
+#   * Single Field without Stopwords
+#     - Same as Single Field, but with stopwords stripped from the component
+#       before stemming.
+#   * Multiple Field without Stopwords
+#     - Same as Multiple Field, but with stopwords stripped from both components
+#       before stemming.
+#   * Single Field with Synonym Expansion, without Stopwords
+#     - Same as Single Field, but with each term's postings lists augmented
+#       with the postings of its synonyms (obtained from the Altervista thesaurus.)
 
 class VSMBase(object):
     """Base VSM search feature."""
     NAME = ''
 
+    # Given a term and an index, returns the IDF score for that term in
+    # the index.
     def idf(self, term, compound_index):
         raise NotImplementedError()
 
+    # Given a search query, returns a list of tokens contained within.
     def query_tokens(self, search):
         raise NotImplementedError()
 
+    # Given a term and an index, returns a list of postings. Each
+    # posting is a doc_id-term_frequency pair.
     def matches(self, term, compound_index):
         raise NotImplementedError()
 
@@ -47,6 +70,9 @@ class VSMBase(object):
             score = dot_product(unit_query_vector, unit_vector(doc_vector))
             shared_obj.set_feature_score(self.NAME, doc_id, score)
 
+    # Given an index and a search object, returns a list of (stem, unstemmed)
+    # pairs, where stem is a case-folded, stemmed word from the index and
+    # unstemmed is the original word.
     def get_stem_unstemmed_pairs(self, index, search):
         stemmed = search.get_tokens_for(index)
         unstemmed = search.get_tokens_for(index, unstemmed=True)
@@ -153,9 +179,14 @@ class VSMTitleAndAbstractMinusStopwords(VSMMultipleFieldsMinusStopwords):
 
 class VSMSingleFieldMinusStopwordsPlusExpansion(VSMSingleFieldMinusStopwords):
     def matches(self, term, compound_index):
+        # Obtain the postings list for this term.
         term_postings = set(compound_index.postings_list(self.INDEX, term.stem))
+
+        # Find synonyms of the term from our thesaurus.
         thesaurus = Thesaurus()
         synonyms = thesaurus[term.unstemmed]
+
+        # Add each synonym's postings to the main posting list.
         for synonym in synonyms:
             stemmed_synonym = tokenizer(synonym)[0]
             postings = compound_index.postings_list(self.INDEX, stemmed_synonym)
