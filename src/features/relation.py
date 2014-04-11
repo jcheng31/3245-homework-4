@@ -3,6 +3,13 @@ import patentfields
 
 
 class RelationalFeatureBase(object):
+    """Feature that scores documents based on their relation to other
+    documents.
+
+    The intuition is that, for the relevant documents, if they are related to
+    other documents (cite them, are family members etc), this is a good
+    signal for relevance.
+    """
     FIELD = None
 
     def __call__(self, search, shared_obj):
